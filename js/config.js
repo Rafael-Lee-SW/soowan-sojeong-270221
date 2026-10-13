@@ -14,6 +14,7 @@ window.WEDDING = {
     address: "서울 서초구 강남대로 213 LL층 엘블레스",
     addressShort: "서울 서초구 강남대로 213",
     tel: "02-526-0300",
+    mapImage: "",                  // 직접 그린 약도 파일 (예: "assets/illust/map.png") — 있으면 지도 대신 표시
     lat: 37.4855, lng: 127.0335,   // 대략값 — 지도 키가 있으면 주소로 다시 좌표를 찾습니다
     naverMapUrl: "https://map.naver.com/p/search/엘블레스%20강남대로%20213",
     kakaoMapUrl: "https://map.kakao.com/?q=엘블레스%20강남대로%20213",

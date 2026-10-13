@@ -50,7 +50,7 @@
   const openEnvelope = () => {
     if (env.classList.contains("is-open")) return;
     env.classList.add("is-open");
-    setTimeout(() => { env.classList.add("is-gone"); document.body.style.overflow = ""; }, 1300);
+    setTimeout(() => { env.classList.add("is-gone"); document.body.style.overflow = ""; }, 700);
   };
   document.body.style.overflow = "hidden";
   env.addEventListener("click", openEnvelope);
@@ -129,6 +129,12 @@
   (() => {
     $("#locationGuide").innerHTML = (W.venue.guide || []).map((g) => `<div><dt>${g.title}</dt><dd>${g.text}</dd></div>`).join("");
     const el = $("#map"), v = W.venue;
+    // 직접 그린 약도가 있으면 그것을 최우선으로
+    if (v.mapImage) {
+      const img = new Image(); img.src = v.mapImage; img.alt = "약도"; img.loading = "lazy";
+      img.onload = () => { el.innerHTML = ""; el.append(img); };
+      return;
+    }
     const load = (src) => new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.append(s); });
 
     if (W.naverMapClientId) {

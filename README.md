@@ -30,6 +30,14 @@ python -m http.server 8000
 2. `python tools/resize-photos.py`
 3. commit & push
 
+## 약도 넣기
+
+약도 이미지를 `assets/illust/map.png` 로 저장하고 `js/config.js` 의 `venue.mapImage` 를 `"assets/illust/map.png"` 로 바꾼다. 4:3 비율이 가장 잘 맞는다.
+
+## 그림 추가하기
+
+GPT 등에서 받은 원본은 `assets/source/` 에 두고, 배경 제거·분할은 `tools/cut-illust.py` 로 한다(흰 배경 기준).
+
 ## 사진 편지함 연결
 
 `apps-script/Code.gs` 상단 주석 참고. 배포된 웹앱 URL 을 `js/config.js` 의 `uploadUrl` 에 넣는다.

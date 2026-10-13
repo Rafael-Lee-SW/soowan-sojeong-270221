@@ -23,15 +23,11 @@
 
 <!-- ───────── 봉투 인트로 ───────── -->
 <div class="envelope" id="envelope" aria-hidden="true">
-  <div class="envelope__paper">
-    <div class="envelope__back"></div>
-    <div class="envelope__letter">
-      <span class="envelope__to">To. 소중한 당신에게</span>
-    </div>
-    <div class="envelope__front"></div>
-    <div class="envelope__flap"></div>
-    <div class="envelope__seal">♥</div>
-  </div>
+  <picture class="envelope__paper">
+    <source type="image/webp" srcset="assets/illust/envelope@600.webp">
+    <img src="assets/illust/envelope@600.png" alt="" fetchpriority="high">
+  </picture>
+  <p class="envelope__to">To. 소중한 당신에게</p>
   <p class="envelope__hint">탭하여 열기</p>
 </div>
 
@@ -40,9 +36,9 @@
   <!-- ───────── 1. 히어로 ───────── -->
   <section class="hero" id="hero">
     <div class="hero__letters" aria-hidden="true">
-      <span class="letter letter--1"></span>
-      <span class="letter letter--2"></span>
-      <span class="letter letter--3"></span>
+      <img class="letter letter--1" src="assets/illust/ico-letter.png" alt="">
+      <img class="letter letter--2" src="assets/illust/ico-bird.png" alt="">
+      <img class="letter letter--3" src="assets/illust/ico-letter.png" alt="">
     </div>
     <p class="hero__eyebrow reveal">We're getting married</p>
     <figure class="hero__art reveal">
@@ -115,8 +111,9 @@
     <p class="location__addr reveal"><span data-bind="venue.address"></span><br><a class="location__tel" data-tel="venue.tel"><span data-bind="venue.tel"></span></a></p>
     <div class="map reveal" id="map">
       <div class="map__placeholder">
-        <span>지도</span>
-        <small>카카오맵 키 등록 후 표시됩니다</small>
+        <img src="assets/illust/ico-wheel.png" alt="" width="48">
+        <span>약도 준비 중</span>
+        <small>assets/illust/map.png 를 넣으면 표시됩니다</small>
       </div>
     </div>
     <div class="location__apps reveal">
@@ -151,7 +148,10 @@
     <form class="upload reveal" id="uploadForm">
       <label class="upload__drop" for="uploadInput">
         <input type="file" id="uploadInput" accept="image/*" multiple hidden>
-        <span class="upload__icon">✉</span>
+        <picture class="upload__icon">
+          <source type="image/webp" srcset="assets/illust/mailbag@600.webp">
+          <img src="assets/illust/mailbag@600.png" alt="" loading="lazy">
+        </picture>
         <span class="upload__text">사진 선택하기</span>
         <span class="upload__sub">여러 장 선택 가능 · 자동으로 적당한 크기로 줄여 보냅니다</span>
       </label>
@@ -164,12 +164,20 @@
 
   <!-- ───────── 8. 푸터 ───────── -->
   <footer class="footer">
-    <div class="footer__share">
+    <picture class="footer__bow reveal">
+      <source type="image/webp" srcset="assets/illust/bow@600.webp">
+      <img src="assets/illust/bow@600.png" alt="인사하는 신랑 신부 그림" loading="lazy">
+    </picture>
+    <div class="footer__ribbon reveal">
+      <img src="assets/illust/ribbon.png" alt="" loading="lazy">
+      <span>Thank you</span>
+    </div>
+    <p class="footer__names reveal"><span data-bind="groom.name"></span> ♥ <span data-bind="bride.name"></span></p>
+    <p class="footer__thanks reveal">저희의 이야기에 함께해 주셔서 고맙습니다</p>
+    <div class="footer__share reveal">
       <button class="btn btn--primary" id="shareKakao" hidden>카카오톡으로 공유</button>
       <button class="btn btn--ghost" id="shareLink">링크 복사</button>
     </div>
-    <p class="footer__names"><span data-bind="groom.name"></span> ♥ <span data-bind="bride.name"></span></p>
-    <p class="footer__thanks">Thank you for being part of our story</p>
 
     <!-- 검토용 테마 전환 — 확정 후 제거 -->
     <div class="themeSwitch" id="themeSwitch">
