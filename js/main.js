@@ -319,7 +319,7 @@
         await new Promise((r) => setTimeout(r, 1500 * retries));
         // 서버가 어디까지 받았는지 물어보고 이어서
         try {
-          const q = await fetch(url, { method: "PUT", headers: { "Content-Range": `bytes */${f.size}` } });
+          const q = await fetch(url, { method: "PUT", headers: { "Content-Range": `bytes */${f.size}` }, body: new Blob([]) });
           if (q.status === 308) { const r = q.headers.get("Range"); start = r ? Number(r.split("-")[1]) + 1 : start; }
           else if (q.status === 200 || q.status === 201) { onProgress(1); return; }
         } catch {}
