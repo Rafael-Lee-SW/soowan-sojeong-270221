@@ -202,8 +202,10 @@ small { font-weight: 300; }
 .hero__date { margin: 0; font-family: var(--font-en); font-size: 17px; letter-spacing: .06em; }
 .hero__venue { margin: 2px 0 0; font-size: 14px; color: var(--ink-soft); letter-spacing: .1em; }
 
-.hero__scroll { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); width: 1px; height: 44px; background: var(--line); overflow: hidden; }
-.hero__scroll span { display: block; width: 100%; height: 50%; background: var(--ink-soft); animation: drop 1.8s var(--ease) infinite; }
+.hero__scroll { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: grid; justify-items: center; gap: 6px; }
+.hero__scroll small { font-family: var(--font-en); font-style: italic; font-size: 12px; letter-spacing: .2em; color: var(--ink-soft); }
+.hero__scroll span { display: block; width: 1px; height: 40px; background: linear-gradient(var(--ink-soft), var(--ink-soft)) no-repeat 0 -40px / 100% 50%, var(--line); animation: drop 1.8s var(--ease) infinite; }
+@keyframes drop { 0% { background-position: 0 -40px; } 100% { background-position: 0 80px; } }
 
 /* 떠다니는 편지봉투 */
 .hero__letters { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
