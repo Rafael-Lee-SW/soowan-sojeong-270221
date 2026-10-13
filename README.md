@@ -42,6 +42,6 @@ GPT 등에서 받은 원본은 `assets/source/` 에 두고, 배경 제거·분�
 
 `apps-script/Code.gs` 상단 주석 참고. 배포된 웹앱 URL 을 `js/config.js` 의 `uploadUrl` 에 넣는다.
 
-## 테마 확정 후
+## 테마
 
-`index.html` 푸터의 `.themeSwitch` 블록과 `main.js` 의 테마 코드에서 localStorage 부분을 제거하고 `<html data-theme="...">` 로 고정.
+화이트로 확정 (`<html data-theme="white">`). 비교가 필요하면 `?theme=cream` 으로 열어본다.

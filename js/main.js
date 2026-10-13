@@ -34,16 +34,9 @@
   $$("[data-action=copy]").forEach((el) => el.addEventListener("click", () => copy(get(el.dataset.copy))));
   $$("[data-action=toggle]").forEach((el) => el.addEventListener("click", () => { const t = $(el.dataset.target); t.hidden = !t.hidden; }));
 
-  /* ── 테마 (검토용) ── */
-  const applyTheme = (t) => {
-    document.documentElement.dataset.theme = t;
-    $$("#themeSwitch button").forEach((b) => b.classList.toggle("is-active", b.dataset.theme === t));
-    try { localStorage.setItem("theme", t); } catch {}
-  };
+  /* ── 테마: 화이트 고정 (?theme=cream 으로 비교만 가능) ── */
   const qTheme = new URLSearchParams(location.search).get("theme");
-  let saved = null; try { saved = localStorage.getItem("theme"); } catch {}
-  applyTheme(qTheme || saved || "cream");
-  $$("#themeSwitch button").forEach((b) => b.addEventListener("click", () => applyTheme(b.dataset.theme)));
+  if (qTheme) document.documentElement.dataset.theme = qTheme;
 
   /* ── 봉투 인트로 ── */
   const env = $("#envelope");
