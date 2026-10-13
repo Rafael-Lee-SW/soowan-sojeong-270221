@@ -83,17 +83,28 @@
 
   /* ── 갤러리 + 라이트박스 ── */
   (() => {
-    const grid = $("#galleryGrid");
-    const photos = window.PHOTOS || [];
-    if (!photos.length) {
-      grid.innerHTML = Array.from({ length: 9 }, (_, i) =>
-        `<div class="gallery__ph${i === 0 ? " is-wide" : ""}">${i === 0 ? "photos coming soon" : ""}</div>`).join("");
-      return;
+    const P = window.PHOTOS || {};
+    const studio = Array.isArray(P) ? P : (P.studio || []);
+    const film = Array.isArray(P) ? [] : (P.film || []);
+    const photos = studio.concat(film);           // 라이트박스 공통 인덱스
+    const grid = $("#galleryStudio"), filmBox = $("#galleryFilm"), strip = $("#galleryFilmStrip");
+
+    if (!studio.length) {
+      grid.innerHTML = Array.from({ length: 5 }, (_, i) =>
+        `<div class="studio__ph${i === 0 ? " is-full" : ""}">${i === 0 ? "photos coming soon" : ""}</div>`).join("");
+    } else {
+      // 첫 장 전폭, 이후 2열, 5장마다 전폭 (가로가 긴 사진은 자리에 맞게 전폭)
+      grid.innerHTML = studio.map((p, i) => {
+        const full = i === 0 || i % 5 === 0 || (p.w && p.h && p.w / p.h > 1.4);
+        return `<figure class="studio__item${full ? " is-full" : ""}" data-i="${i}"><img src="${p.thumb || p.src}" alt="" loading="lazy"></figure>`;
+      }).join("");
     }
-    grid.innerHTML = photos.map((p, i) => {
-      const wide = p.w && p.h && p.w / p.h > 1.6;
-      return `<figure class="gallery__item${wide ? " is-wide" : ""}" data-i="${i}"><img src="${p.thumb || p.src}" alt="" loading="lazy"></figure>`;
-    }).join("");
+    if (film.length) {
+      filmBox.hidden = false;
+      strip.innerHTML = film.map((p, i) =>
+        `<figure class="polaroid" data-i="${studio.length + i}"><img src="${p.src}" alt="" loading="lazy"><figcaption>${p.caption || `no. ${i + 1}`}</figcaption></figure>`).join("");
+    }
+    if (!photos.length) return;
 
     const lb = $("#lightbox"), img = $(".lightbox__img", lb), count = $(".lightbox__count", lb);
     let cur = 0;
@@ -104,7 +115,7 @@
     };
     const open = (i) => { show(i); lb.hidden = false; document.body.style.overflow = "hidden"; };
     const close = () => { lb.hidden = true; document.body.style.overflow = ""; };
-    grid.addEventListener("click", (e) => { const f = e.target.closest(".gallery__item"); if (f) open(+f.dataset.i); });
+    $("#gallery").addEventListener("click", (e) => { const f = e.target.closest("[data-i]"); if (f) open(+f.dataset.i); });
     $(".lightbox__close", lb).addEventListener("click", close);
     $(".lightbox__nav--prev", lb).addEventListener("click", () => show(cur - 1));
     $(".lightbox__nav--next", lb).addEventListener("click", () => show(cur + 1));

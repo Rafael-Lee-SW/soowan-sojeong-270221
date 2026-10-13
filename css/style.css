@@ -256,16 +256,40 @@ small { font-weight: 300; }
 /* ─────────────────────────────────────────────
    4. 갤러리
    ───────────────────────────────────────────── */
-.gallery__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-.gallery__item { aspect-ratio: 1; overflow: hidden; background: var(--bg-soft); border-radius: 2px; }
-.gallery__item img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
-.gallery__item:hover img { transform: scale(1.04); }
-.gallery__item.is-wide { grid-column: span 2; aspect-ratio: 2 / 1; }
-.gallery__ph {
-  display: grid; place-items: center; aspect-ratio: 1;
-  background: var(--bg-soft); color: var(--ink-soft); font-family: var(--font-en); font-style: italic; font-size: 14px;
+/* Studio — 에디토리얼 그리드: 첫 장 전폭, 이후 2열, 5장마다 전폭 */
+.studio { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.studio__item { overflow: hidden; background: var(--bg-soft); border-radius: 3px; cursor: pointer; aspect-ratio: 4 / 5; }
+.studio__item.is-full { grid-column: 1 / -1; aspect-ratio: auto; }
+.studio__item img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+.studio__item:hover img { transform: scale(1.03); }
+.studio__ph { aspect-ratio: 4 / 5; background: var(--bg-soft); border-radius: 3px; display: grid; place-items: center;
+  color: var(--ink-soft); font-family: var(--font-en); font-style: italic; font-size: 14px; }
+.studio__ph.is-full { grid-column: 1 / -1; aspect-ratio: 3 / 2; }
+
+/* Film — 폴라로이드 가로 스트립 */
+.film { margin: 44px calc(-1 * var(--gutter)) 0; }
+.film__label { display: flex; justify-content: space-between; align-items: baseline; margin: 0 var(--gutter) 14px; font-size: 14px; }
+.film__label small { font-family: var(--font-en); font-style: italic; font-size: 13px; color: var(--ink-soft); letter-spacing: .04em; }
+.film__strip {
+  display: flex; gap: 14px; padding: 12px var(--gutter) 20px;
+  overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-.gallery__ph.is-wide { grid-column: span 2; aspect-ratio: 2 / 1; }
+.film__strip::-webkit-scrollbar { display: none; }
+.polaroid {
+  flex: 0 0 200px; scroll-snap-align: center;
+  padding: 10px 10px 34px; background: #fff; border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 10px 24px rgba(0,0,0,.10);
+  transform: rotate(var(--tilt, 0deg)); cursor: pointer;
+  transition: transform .4s var(--ease);
+}
+.polaroid:hover { transform: rotate(0deg) translateY(-4px); }
+.polaroid:nth-child(odd)  { --tilt: -1.6deg; }
+.polaroid:nth-child(even) { --tilt: 1.4deg; }
+.polaroid img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--bg-soft);
+  filter: saturate(.92) contrast(.97); }
+.polaroid figcaption { margin-top: 10px; font-family: var(--font-en); font-style: italic; font-size: 13px; color: var(--ink-soft); text-align: center; letter-spacing: .04em; }
+.film__hint { margin: 0 var(--gutter); font-size: 11.5px; color: var(--ink-soft); text-align: right; letter-spacing: .06em; }
 
 /* 라이트박스 */
 .lightbox {
