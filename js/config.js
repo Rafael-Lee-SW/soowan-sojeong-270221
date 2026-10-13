@@ -50,7 +50,7 @@ window.WEDDING = {
   },
 
   // 사진 편지함 (Google Apps Script 웹앱 URL — 배포 후 붙여넣기)
-  uploadUrl: "",
+  uploadUrl: "https://script.google.com/macros/s/AKfycbxEIzpf7fm-oBocNZ5F_zg2Tb9kV0nwBj11Gl_tjG9YjpeG9o-9bDJOKEZ-jWMvpxc/exec",
   uploadMaxEdge: 2400,   // 업로드 전 긴 변 리사이즈(px)
   uploadQuality: 0.88,
 
