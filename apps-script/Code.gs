@@ -28,8 +28,7 @@
  *  - 사진 20MB/장, 하루 2000장 / 동영상 1GB/개, 총 50개 / 전체 누적 TOTAL_BYTES
  *  - 한도에 걸려 복구해야 하면 편집기에서 resetCounters() 를 한 번 실행
  *
- * ⚠ Drive 용량: 무료 계정은 15GB (Gmail 과 공유). 동영상 50개 × 1GB 를 다 받으려면 Google One 이 필요하다.
- *   TOTAL_BYTES 는 계정 여유 용량보다 작게 둘 것.
+ * Drive 용량: TOTAL_BYTES 는 계정 여유 용량보다 작게 둘 것 (현재 Google One 5TB 기준 100GB).
  */
 
 const FOLDER_ID = "여기에_폴더_ID";
@@ -43,7 +42,7 @@ const IMAGE_MAX  = 20 * 1024 * 1024;              // 사진 장당 20MB
 const VIDEO_MAX  = 1024 * 1024 * 1024;            // 동영상 개당 1GB
 const DAILY_IMAGES = 2000;                        // 하루 사진 장수
 const TOTAL_VIDEOS = 50;                          // 동영상 총 개수
-const TOTAL_BYTES  = 12 * 1024 * 1024 * 1024;     // 전체 누적 12GB (계정 여유 용량에 맞출 것)
+const TOTAL_BYTES  = 100 * 1024 * 1024 * 1024;    // 전체 누적 100GB (Google One 5TB 계정 기준. 동영상 50×1GB + 사진 여유)
 const ALERT_AT     = 800;                         // 하루 사진 이 건수를 넘기면 본인 메일로 1회 알림 (0 이면 끔)
 
 function doPost(e) {
