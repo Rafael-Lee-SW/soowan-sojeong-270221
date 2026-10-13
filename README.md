@@ -67,7 +67,7 @@ GPT 등에서 받은 원본은 `assets/source/` 에 두고, 배경 제거·분�
 
 ## 사진·동영상 편지함 연결
 
-`apps-script/Code.gs` 상단 주석 참고. **매니페스트(`apps-script/appsscript.json`)도 함께 넣어야** Drive 업로드 세션을 열 수 있다.
+`apps-script/Code.gs` 상단 주석 참고. 권한 범위는 코드에서 자동 감지되므로 `appsscript.json` 은 참고용(선택).
 배포된 웹앱 URL 을 `js/config.js` 의 `uploadUrl` 에 넣는다.
 
 전송 방식: 브라우저 → Apps Script(세션만 발급) → 브라우저가 Google 서버로 직접 8MB 씩 조각 전송.

@@ -10,12 +10,12 @@
  *  1. Google Drive 에서 사진을 받을 폴더를 만들고, URL 끝의 폴더 ID 를 FOLDER_ID 에 넣는다.
  *     예) https://drive.google.com/drive/folders/1AbCdEf...  →  "1AbCdEf..."
  *  2. https://script.google.com → 새 프로젝트 → 이 파일 내용을 붙여넣고 저장
- *  3. ★ 프로젝트 설정(톱니) → "appsscript.json 매니페스트 파일을 편집기에 표시" 체크
- *     → 편집기에 생긴 appsscript.json 을 열어 같은 폴더의 appsscript.json 내용으로 교체 (OAuth 범위 선언)
- *  4. 배포 → 새 배포 → 유형: 웹 앱 / 실행 주체: 나 / 액세스 권한: 모든 사용자 → 권한 승인
+ *     (OAuth 범위는 코드에서 자동 감지됨: DriveApp → Drive, UrlFetchApp → 외부 요청, MailApp → 메일.
+ *      apps-script/appsscript.json 은 참고용이며 따로 넣지 않아도 된다)
+ *  3. 배포 → 새 배포 → 유형: 웹 앱 / 실행 주체: 나 / 액세스 권한: 모든 사용자 → 권한 승인
  *     (범위가 늘어났으므로 기존 배포를 수정할 때도 "권한 검토" 가 한 번 더 뜬다 — 정상)
- *  5. 생성된 "웹 앱 URL" 을 js/config.js 의 uploadUrl 에 붙여넣는다.
- *  6. 코드를 수정하면 반드시 "배포 → 배포 관리 → 연필 → 버전: 새 버전 → 배포" 해야 반영된다. (URL 은 그대로)
+ *  4. 생성된 "웹 앱 URL" 을 js/config.js 의 uploadUrl 에 붙여넣는다.
+ *  5. 코드를 수정하면 반드시 "배포 → 배포 관리 → 연필 → 버전: 새 버전 → 배포" 해야 반영된다. (URL 은 그대로)
  *
  * 운영 스위치 — 재배포 없이 "프로젝트 설정 → 스크립트 속성" 에서 켜고 끈다:
  *  - test_mode = 1 : 기간 제한 무시 (테스트할 때만. 끝나면 반드시 삭제)
@@ -86,6 +86,9 @@ function doPost(e) {
     const ext = (orig.match(/\.([a-z0-9]{2,5})$/i) || [, isVideo ? "mp4" : "jpg"])[1].toLowerCase();
     const base = clean(orig.replace(/\.[^.]+$/, "")).slice(0, 40);
     const name = `${ts}_${sender ? sender + "_" : ""}${base}.${ext}`;
+
+    // 폴더 존재 확인 (+ 이 DriveApp 호출이 있어야 Drive 권한 범위가 자동으로 포함된다)
+    DriveApp.getFolderById(FOLDER_ID);
 
     // Drive 에 재개 가능 업로드 세션 열기 (내 권한). 브라우저는 돌려받은 URL 로 직접 올린다.
     const res = UrlFetchApp.fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable", {
