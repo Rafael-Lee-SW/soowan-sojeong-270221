@@ -30,9 +30,36 @@ python -m http.server 8000
 2. `python tools/resize-photos.py`
 3. commit & push
 
-## 약도 넣기
+## 나중에 반영할 것 (실물 청첩장 기준)
 
-약도 이미지를 `assets/illust/map.png` 로 저장하고 `js/config.js` 의 `venue.mapImage` 를 `"assets/illust/map.png"` 로 바꾼다. 4:3 비율이 가장 잘 맞는다.
+실물 청첩장(`청첩장_실물 (1).jpg`, `(2).jpg`)에 쓰인 **약도**와 **손으로 수정된 그림**은 아직 웹에 반영하지 않았다.
+받으면 아래 순서로 넣는다.
+
+### 1) 약도
+1. 약도 파일을 `assets/illust/map.png` (또는 .webp/.jpg) 로 저장 — 4:3 비율이 지도 칸에 가장 잘 맞음. 흰 배경이면 `python tools/cut-illust.py <원본> map 1200` 으로 투명화 가능
+2. `js/config.js` → `venue.mapImage: "assets/illust/map.png"`
+3. 끝. (`index.html` 의 "약도 준비 중" 플레이스홀더는 자동으로 교체됨)
+
+### 2) 손으로 수정된 그림으로 교체
+현재 쓰는 파일과 위치 (같은 파일명으로 덮어쓰면 코드 수정 없이 교체됨):
+
+| 그림 | 파일 | 쓰이는 곳 |
+|---|---|---|
+| 달리는 신랑신부 (실물 앞면, 흑백 선화 + 반짝이) | `assets/illust/running.{png,webp}`, `running@800.*` | 히어로 (`index.html` `.hero__art`) |
+| 수레 신랑신부 | `assets/illust/wheelbarrow.*`, `wheelbarrow@800.*` | 사진 편지함 (`.letterbox__art`) |
+| 인사하는 신랑신부 | `assets/illust/bow.*`, `bow@600.*` | 푸터 (`.footer__bow`) |
+| 봉투 | `assets/illust/envelope.*`, `envelope@600.*` | 인트로 (`.envelope__paper`) |
+| 우편가방 | `assets/illust/mailbag@300.*` | 업로드 버튼 (`.upload__icon`) |
+| 꽃 덩굴 (실물 뒷면 세로 장식) | 아직 없음 → `assets/illust/vine.*` 로 넣고 `.section__title` 옆이나 섹션 구분용으로 사용 | — |
+
+교체 절차: 원본을 `assets/source/` 에 두고 `python tools/cut-illust.py "assets/source/파일.png" running 1400`
+→ 배경 제거·크롭·PNG/WebP 생성. 신랑신부가 그림 중앙에 오도록 자동 패딩됨. `@800` 등 축소본도 함께 만들려면 폭을 바꿔 한 번 더 실행.
+교체 후 `assets/illust/og.jpg`(카카오톡 미리보기)도 다시 만들고 developers.kakao.com/tool/clear/og 에서 캐시 삭제.
+
+### 3) 실물에서 가져온 문구·폰트 (이미 반영됨)
+- 인사말: 실물 뒷면 문구 그대로 (`config.js` `greeting.body`)
+- 영문 손글씨: Caveat (`--font-hand`), 한글 손글씨: Nanum Pen Script (`--font-hand-ko`) — `css/style.css` 상단 토큰
+- "Kindly join us for the wedding of" / "Feb. 21st, 2027 · 12:30 PM" / "차남 수완 · 장녀 소정"
 
 ## 그림 추가하기
 

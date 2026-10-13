@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-theme="white">
+<html lang="ko" data-theme="white" class="no-js">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -12,6 +12,9 @@
   <meta property="og:title" content="수완 ♥ 소정 결혼합니다">
   <meta property="og:description" content="2027년 2월 21일 일요일 12시 30분 · 엘블레스">
   <meta property="og:image" content="https://rafael-lee-sw.github.io/soowan-sojeong-270221/assets/illust/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="ko_KR">
   <meta property="og:url" content="https://rafael-lee-sw.github.io/soowan-sojeong-270221/">
 
   <link rel="icon" type="image/png" sizes="32x32" href="assets/illust/favicon-32.png">
@@ -21,8 +24,8 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Noto+Serif+KR:wght@300;400&family=Caveat:wght@500;600&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=20261013b">
 </head>
 <body>
 
@@ -41,15 +44,16 @@
   <!-- ───────── 1. 히어로 ───────── -->
   <section class="hero" id="hero">
     <div class="hero__letters" aria-hidden="true">
-      <img class="letter letter--1" src="assets/illust/ico-letter.png" alt="">
-      <img class="letter letter--2" src="assets/illust/ico-bird.png" alt="">
-      <img class="letter letter--3" src="assets/illust/ico-letter.png" alt="">
+      <img class="letter letter--1" src="assets/illust/ico-letter.webp" alt="">
+      <img class="letter letter--2" src="assets/illust/ico-bird.webp" alt="">
+      <img class="letter letter--3" src="assets/illust/ico-letter.webp" alt="">
     </div>
-    <p class="hero__eyebrow reveal">We're getting married</p>
+    <p class="hero__eyebrow reveal">Kindly join us<br>for the wedding of</p>
+    <!-- TODO(그림 교체): 실물 청첩장에 쓰인 손수정본(흑백 선화+반짝이)을 받으면 assets/illust/running.* 를 같은 이름으로 덮어쓰면 됨 (README "나중에 반영할 것") -->
     <figure class="hero__art reveal">
       <picture>
         <source type="image/webp" srcset="assets/illust/running@800.webp 800w, assets/illust/running.webp 1400w" sizes="(max-width: 520px) 90vw, 420px">
-        <img src="assets/illust/running@800.png" srcset="assets/illust/running@800.png 800w, assets/illust/running.png 1400w" sizes="(max-width: 520px) 90vw, 420px" alt="달려가는 신랑 신부 그림" fetchpriority="high">
+        <img src="assets/illust/running@800.png" srcset="assets/illust/running@800.png 800w, assets/illust/running.png 1400w" sizes="(max-width: 520px) 90vw, 420px" alt="달려가는 신랑 신부 그림">
       </picture>
     </figure>
     <h1 class="hero__names reveal">
@@ -121,9 +125,8 @@
     <p class="location__addr reveal"><span data-bind="venue.address"></span><br><a class="location__tel" data-tel="venue.tel"><span data-bind="venue.tel"></span></a></p>
     <div class="map reveal" id="map">
       <div class="map__placeholder">
-        <img src="assets/illust/ico-wheel.png" alt="" width="48">
+        <img src="assets/illust/ico-wheel.webp" alt="" width="48">
         <span>약도 준비 중</span>
-        <small>assets/illust/map.png 를 넣으면 표시됩니다</small>
       </div>
     </div>
     <div class="location__apps reveal">
@@ -139,7 +142,7 @@
   <section class="section gift" id="gift">
     <p class="section__label reveal">With love</p>
     <h2 class="section__title reveal">마음 전하실 곳</h2>
-    <p class="gift__note reveal">참석이 어려워 직접 축하를 전하지 못하는 분들을 위해<br>계좌번호를 안내드립니다. 너그러운 마음으로 양해 부탁드립니다.</p>
+    <p class="gift__note reveal">참석이 어려워 직접 축하를 전하지 못하는 분들을 위해 계좌번호를 안내드립니다. 너그러운 마음으로 양해 부탁드립니다.</p>
     <div class="accordion reveal" id="accounts"></div>
   </section>
 
@@ -153,22 +156,22 @@
         <img src="assets/illust/wheelbarrow@800.png" srcset="assets/illust/wheelbarrow@800.png 800w, assets/illust/wheelbarrow.png 1400w" sizes="(max-width: 520px) 80vw, 360px" alt="수레에 탄 신부를 미는 신랑 그림" loading="lazy">
       </picture>
     </figure>
-    <p class="letterbox__desc reveal">결혼식 날 찍어주신 사진을 이곳에 담아주시면<br>저희 두 사람에게 바로 도착합니다.</p>
+    <p class="letterbox__desc reveal">결혼식 날 찍어주신 사진을 이곳에 담아주시면 저희 두 사람에게 바로 도착합니다.</p>
 
     <form class="upload reveal" id="uploadForm">
       <label class="upload__drop" for="uploadInput">
-        <input type="file" id="uploadInput" accept="image/*" multiple hidden>
+        <input type="file" id="uploadInput" class="visually-hidden" accept="image/*" multiple>
         <picture class="upload__icon">
-          <source type="image/webp" srcset="assets/illust/mailbag@600.webp">
-          <img src="assets/illust/mailbag@600.png" alt="" loading="lazy">
+          <source type="image/webp" srcset="assets/illust/mailbag@300.webp">
+          <img src="assets/illust/mailbag@300.png" alt="" loading="lazy">
         </picture>
         <span class="upload__text">사진 선택하기</span>
         <span class="upload__sub">여러 장 선택 가능 · 자동으로 적당한 크기로 줄여 보냅니다</span>
       </label>
-      <input class="upload__name" type="text" id="uploadSender" placeholder="보내는 분 (선택)" maxlength="30" autocomplete="off">
+      <input class="upload__name" type="text" id="uploadSender" placeholder="보내는 분 (선택)" maxlength="20" autocomplete="off">
       <ul class="upload__list" id="uploadList"></ul>
       <button class="btn btn--primary upload__submit" type="submit" id="uploadSubmit" disabled>보내기</button>
-      <p class="upload__status" id="uploadStatus"></p>
+      <p class="upload__status" id="uploadStatus" aria-live="polite"></p>
     </form>
   </section>
 
@@ -179,7 +182,7 @@
       <img src="assets/illust/bow@600.png" alt="인사하는 신랑 신부 그림" loading="lazy">
     </picture>
     <div class="footer__ribbon reveal">
-      <img src="assets/illust/ribbon.png" alt="" loading="lazy">
+      <img src="assets/illust/ribbon.webp" alt="" loading="lazy">
       <span>Thank you</span>
     </div>
     <p class="footer__names reveal"><span data-bind="groom.name"></span> ♥ <span data-bind="bride.name"></span></p>
@@ -192,7 +195,7 @@
 </main>
 
 <!-- 라이트박스 -->
-<div class="lightbox" id="lightbox" hidden>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="사진 보기" hidden>
   <button class="lightbox__close" aria-label="닫기">×</button>
   <button class="lightbox__nav lightbox__nav--prev" aria-label="이전">‹</button>
   <img class="lightbox__img" alt="">
@@ -202,8 +205,8 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="js/config.js"></script>
-<script src="js/photos.js"></script>
-<script src="js/main.js"></script>
+<script src="js/config.js?v=20261013b"></script>
+<script src="js/photos.js?v=20261013b"></script>
+<script src="js/main.js?v=20261013b"></script>
 </body>
 </html>
