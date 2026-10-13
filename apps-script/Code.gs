@@ -105,7 +105,7 @@ function doPost(e) {
       payload: JSON.stringify({ name, parents: [FOLDER_ID] }),
       muteHttpExceptions: true,
     });
-    const loc = res.getAllHeaders()["Location"];
+    const hdr = res.getAllHeaders(); const loc = hdr["Location"] || hdr["location"];
     if (res.getResponseCode() !== 200 || !loc) { console.error("session", res.getResponseCode(), res.getContentText()); return json({ ok: false, error: "error" }); }
     return json({ ok: true, url: loc });
   } catch (err) {
@@ -118,6 +118,22 @@ function doPost(e) {
 // 브라우저에서 URL 을 직접 열었을 때 살아있는지 확인용
 function doGet() {
   return json({ ok: true, service: "photo-letterbox", mode: "resumable" });
+}
+
+// 권한 범위 선언용 — 실행되지 않지만, Apps Script 가 코드를 읽고 Drive "쓰기" 권한까지 요청하게 만든다.
+// (getFolderById 만 있으면 읽기 전용으로 감지되어 업로드 세션이 403 으로 거부될 수 있음)
+function _declareScopes() {
+  DriveApp.getFolderById(FOLDER_ID).createFile("scope", "scope");
+  UrlFetchApp.fetch("https://www.googleapis.com/");
+  MailApp.sendEmail("", "", "");
+}
+
+// 설정 점검 — 편집기에서 ▶ 실행하면 폴더 접근·토큰 권한을 확인해 로그에 출력
+function checkSetup() {
+  const folder = DriveApp.getFolderById(FOLDER_ID);
+  console.log("folder OK: " + folder.getName());
+  const r = UrlFetchApp.fetch("https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=" + ScriptApp.getOAuthToken(), { muteHttpExceptions: true });
+  console.log("token scopes: " + (JSON.parse(r.getContentText()).scope || r.getContentText()));
 }
 
 // ── 운영 스위치: 편집기 상단 함수 선택 → ▶ 실행 (스크립트 속성 화면을 안 거쳐도 됨) ──
