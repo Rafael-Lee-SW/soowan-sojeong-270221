@@ -28,8 +28,9 @@ window.WEDDING = {
   },
 
   // 사람
-  groom: { name: "이수완", en: "Soowan", father: "이상군", mother: "김옥경", relation: "막내", tel: "010-2770-1457" },
-  bride: { name: "이소정", en: "Sojeong", father: "이명호", mother: "김지영", relation: "장녀", tel: "010-5686-6551" },
+  // relation: 같은 성별 형제 중 순서 (장남/차남…, 장녀/차녀…). first: 부모 란 뒤에 붙는 이름(성 제외)
+  groom: { name: "이수완", first: "수완", en: "Soowan", father: "이상군", mother: "김옥경", relation: "차남", tel: "010-2770-1457" },
+  bride: { name: "이소정", first: "소정", en: "Sojeong", father: "이명호", mother: "김지영", relation: "장녀", tel: "010-5686-6551" },
 
   // 인사말 (줄바꿈은 \n)
   greeting: {
