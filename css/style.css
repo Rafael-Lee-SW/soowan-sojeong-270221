@@ -372,14 +372,16 @@ small { font-weight: 300; }
 .upload__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .upload__list:empty { display: none; }
 .upload__list li { position: relative; aspect-ratio: 1; border-radius: 4px; overflow: hidden; background: var(--bg-soft); }
-.upload__list img { width: 100%; height: 100%; object-fit: cover; }
+.upload__list img, .upload__list video { width: 100%; height: 100%; object-fit: cover; }
+.upload__list li.is-video::before { content: "▶"; position: absolute; left: 6px; bottom: 4px; z-index: 1; font-size: 11px; color: #fff; text-shadow: 0 0 4px rgba(0,0,0,.6); }
+.upload__list li.is-video-ph { background: var(--ink); }
 .upload__list li::after {
   content: attr(data-state); position: absolute; inset: 0; display: grid; place-items: center;
   font-size: 11px; color: #fff; background: rgba(0,0,0,.45); opacity: 0; transition: opacity .2s;
 }
 .upload__list li[data-state]:not([data-state=""])::after { opacity: 1; }
 .upload__list li[data-state="완료"]::after { background: rgba(60,120,60,.55); }
-.upload__list li[data-state="실패"]::after { background: rgba(170,40,30,.6); }
+.upload__list li[data-state="실패"]::after, .upload__list li[data-state="한도 초과"]::after, .upload__list li[data-state="용량 초과"]::after, .upload__list li[data-state="접수 마감"]::after { background: rgba(170,40,30,.6); }
 .upload__status { margin: 0; min-height: 1.5em; font-size: 13px; color: var(--ink-soft); }
 
 /* ─────────────────────────────────────────────

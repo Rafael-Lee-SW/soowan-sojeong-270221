@@ -60,8 +60,9 @@ window.WEDDING = {
   // 사진 편지함 (Google Apps Script 웹앱)
   uploadUrl: "https://script.google.com/macros/s/AKfycbxEIzpf7fm-oBocNZ5F_zg2Tb9kV0nwBj11Gl_tjG9YjpeG9o-9bDJOKEZ-jWMvpxc/exec",
   uploadToken: "ss-270221-letter",   // Code.gs 의 TOKEN 과 동일해야 함 (단순 봇 차단용)
-  uploadMaxEdge: 2400,               // 업로드 전 긴 변 리사이즈(px)
-  uploadQuality: 0.88,
+  // 원본 그대로 전송 (리사이즈 없음). 아래 한도는 안내용이고 실제 한도는 Code.gs 가 강제함 — 두 곳을 같이 맞출 것
+  uploadImageMax: 20 * 1024 * 1024,   // 사진 20MB
+  uploadVideoMax: 1024 * 1024 * 1024, // 동영상 1GB
 
   // 공유
   shareTitle: "수완 ♥ 소정 결혼합니다",

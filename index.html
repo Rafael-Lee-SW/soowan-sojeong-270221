@@ -25,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Noto+Serif+KR:wght@300;400&family=Caveat:wght@500;600&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261013b">
+  <link rel="stylesheet" href="css/style.css?v=20261013c">
 </head>
 <body>
 
@@ -149,24 +149,24 @@
   <!-- ───────── 7. 사진 편지함 ───────── -->
   <section class="section letterbox" id="letterbox">
     <p class="section__label reveal">Photo letter</p>
-    <h2 class="section__title reveal">사진을 편지로 보내주세요</h2>
+    <h2 class="section__title reveal">사진과 영상을 편지로 보내주세요</h2>
     <figure class="letterbox__art reveal">
       <picture>
         <source type="image/webp" srcset="assets/illust/wheelbarrow@800.webp 800w, assets/illust/wheelbarrow.webp 1400w" sizes="(max-width: 520px) 80vw, 360px">
         <img src="assets/illust/wheelbarrow@800.png" srcset="assets/illust/wheelbarrow@800.png 800w, assets/illust/wheelbarrow.png 1400w" sizes="(max-width: 520px) 80vw, 360px" alt="수레에 탄 신부를 미는 신랑 그림" loading="lazy">
       </picture>
     </figure>
-    <p class="letterbox__desc reveal">결혼식 날 찍어주신 사진을 이곳에 담아주시면 저희 두 사람에게 바로 도착합니다.</p>
+    <p class="letterbox__desc reveal">결혼식 날 찍어주신 사진과 영상을 이곳에 담아주시면 저희 두 사람에게 바로 도착합니다.</p>
 
     <form class="upload reveal" id="uploadForm">
       <label class="upload__drop" for="uploadInput">
-        <input type="file" id="uploadInput" class="visually-hidden" accept="image/*" multiple>
+        <input type="file" id="uploadInput" class="visually-hidden" accept="image/*,video/*" multiple>
         <picture class="upload__icon">
           <source type="image/webp" srcset="assets/illust/mailbag@300.webp">
           <img src="assets/illust/mailbag@300.png" alt="" loading="lazy">
         </picture>
-        <span class="upload__text">사진 선택하기</span>
-        <span class="upload__sub">여러 장 선택 가능 · 자동으로 적당한 크기로 줄여 보냅니다</span>
+        <span class="upload__text">사진 · 동영상 선택하기</span>
+        <span class="upload__sub">여러 개 선택 가능 · 원본 그대로 전송됩니다 (사진 20MB · 영상 1GB까지)</span>
       </label>
       <input class="upload__name" type="text" id="uploadSender" placeholder="보내는 분 (선택)" maxlength="20" autocomplete="off">
       <ul class="upload__list" id="uploadList"></ul>
@@ -205,8 +205,8 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="js/config.js?v=20261013b"></script>
-<script src="js/photos.js?v=20261013b"></script>
-<script src="js/main.js?v=20261013b"></script>
+<script src="js/config.js?v=20261013c"></script>
+<script src="js/photos.js?v=20261013c"></script>
+<script src="js/main.js?v=20261013c"></script>
 </body>
 </html>

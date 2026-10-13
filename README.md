@@ -65,9 +65,14 @@ python -m http.server 8000
 
 GPT 등에서 받은 원본은 `assets/source/` 에 두고, 배경 제거·분할은 `tools/cut-illust.py` 로 한다(흰 배경 기준).
 
-## 사진 편지함 연결
+## 사진·동영상 편지함 연결
 
-`apps-script/Code.gs` 상단 주석 참고. 배포된 웹앱 URL 을 `js/config.js` 의 `uploadUrl` 에 넣는다.
+`apps-script/Code.gs` 상단 주석 참고. **매니페스트(`apps-script/appsscript.json`)도 함께 넣어야** Drive 업로드 세션을 열 수 있다.
+배포된 웹앱 URL 을 `js/config.js` 의 `uploadUrl` 에 넣는다.
+
+전송 방식: 브라우저 → Apps Script(세션만 발급) → 브라우저가 Google 서버로 직접 8MB 씩 조각 전송.
+한도(사진 20MB/장, 하루 2000장 · 동영상 1GB/개, 총 50개 · 누적 12GB)는 `Code.gs` 상수에서 바꾸고, 안내 문구용 값은 `config.js` 의 `uploadImageMax/uploadVideoMax` 를 맞춘다.
+Drive 무료 용량은 15GB(Gmail 과 공유) — 동영상을 많이 받으려면 Google One 필요.
 
 ## 테마
 

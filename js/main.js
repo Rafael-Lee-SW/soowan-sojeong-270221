@@ -233,38 +233,55 @@
     });
   });
 
-  /* ── 사진 편지함 (업로드) ── */
+  /* ── 사진·동영상 편지함 (업로드) ──
+     1) Apps Script 에 파일 정보만 보내 Drive 업로드 세션 URL 을 받고
+     2) 그 URL 로 Google 서버에 직접 8MB 씩 조각 전송 (Apps Script 를 거치지 않아 1GB 동영상도 가능) */
   safe("upload", () => {
     const form = $("#uploadForm"), input = $("#uploadInput"), list = $("#uploadList"),
           submit = $("#uploadSubmit"), status = $("#uploadStatus"), drop = $(".upload__drop", form);
-    const MAX_FILES = 30, PARALLEL = 3;
+    const MAX_FILES = 30, PARALLEL = 2, CHUNK = 8 * 1024 * 1024;   // 조각은 256KB 의 배수여야 함
+    const IMAGE_MAX = W.uploadImageMax || 20 * 1024 * 1024, VIDEO_MAX = W.uploadVideoMax || 1024 * 1024 * 1024;
     let files = [], uploading = false;
+    const mb = (n) => `${(n / 1048576).toFixed(n < 10485760 ? 1 : 0)}MB`;
+    const kind = (f) => (f.type.startsWith("video/") || /\.(mp4|mov|m4v|webm|3gp)$/i.test(f.name)) ? "video" : "image";
 
     const render = () => {
       list.innerHTML = "";
       files.forEach((f) => {
         const li = document.createElement("li");
         li.dataset.state = f._state || "";
-        const img = new Image(); img.alt = "";
-        const url = URL.createObjectURL(f); img.src = url;
-        img.onload = () => URL.revokeObjectURL(url);
-        img.onerror = () => { URL.revokeObjectURL(url); li.dataset.state = "미리보기 불가"; };
-        li.append(img); list.append(li); f._li = li;
+        if (kind(f) === "video") {
+          const v = document.createElement("video"); v.muted = true; v.playsInline = true; v.preload = "metadata";
+          const url = URL.createObjectURL(f); v.src = url;
+          v.onloadeddata = () => { try { v.currentTime = 0.1; } catch {} };
+          v.onerror = () => { URL.revokeObjectURL(url); li.classList.add("is-video-ph"); };
+          li.append(v); li.classList.add("is-video");
+        } else {
+          const img = new Image(); img.alt = "";
+          const url = URL.createObjectURL(f); img.src = url;
+          img.onload = () => URL.revokeObjectURL(url);
+          img.onerror = () => { URL.revokeObjectURL(url); li.dataset.state = "미리보기 불가"; };
+          li.append(img);
+        }
+        list.append(li); f._li = li;
       });
       submit.disabled = !files.length;
-      status.textContent = files.length ? `${files.length}장 선택됨` : "";
+      const total = files.reduce((s, f) => s + f.size, 0);
+      status.textContent = files.length ? `${files.length}개 선택됨 · ${mb(total)}` : "";
     };
     const key = (f) => `${f.name}|${f.size}|${f.lastModified}`;
     const addFiles = (fl) => {
       const picked = [...fl];
-      const images = picked.filter((f) => f.type.startsWith("image/") || /\.(jpe?g|png|webp|heic|heif)$/i.test(f.name));
+      const media = picked.filter((f) => f.type.startsWith("image/") || f.type.startsWith("video/") || /\.(jpe?g|png|webp|heic|heif|gif|mp4|mov|m4v|webm|3gp)$/i.test(f.name));
+      const sized = media.filter((f) => f.size <= (kind(f) === "video" ? VIDEO_MAX : IMAGE_MAX));
       const seen = new Set(files.map(key));
-      const fresh = images.filter((f) => !seen.has(key(f)));
+      const fresh = sized.filter((f) => !seen.has(key(f)));
       const room = MAX_FILES - files.length;
       files = files.concat(fresh.slice(0, room));
-      const dropped = picked.length - images.length, over = Math.max(0, fresh.length - room);
-      if (dropped) toast(`${dropped}개는 이미지가 아니라 제외했습니다`);
-      else if (over) toast(`한 번에 ${MAX_FILES}장까지 보낼 수 있어요`);
+      const notMedia = picked.length - media.length, tooBig = media.length - sized.length, over = Math.max(0, fresh.length - room);
+      if (notMedia) toast(`${notMedia}개는 사진·동영상이 아니라 제외했습니다`);
+      else if (tooBig) toast(`${tooBig}개는 너무 커서 제외했습니다 (사진 ${mb(IMAGE_MAX)} · 동영상 ${mb(VIDEO_MAX)} 까지)`);
+      else if (over) toast(`한 번에 ${MAX_FILES}개까지 보낼 수 있어요`);
       render();
     };
     input.addEventListener("change", () => { addFiles(input.files); input.value = ""; });
@@ -273,36 +290,51 @@
     drop.addEventListener("drop", (e) => addFiles(e.dataTransfer.files));
     window.addEventListener("beforeunload", (e) => { if (uploading) { e.preventDefault(); e.returnValue = ""; } });
 
-    // 캔버스로 리사이즈 → JPEG base64 (투명 PNG 는 흰 배경으로)
-    const shrink = (file) => new Promise((resolve, reject) => {
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload = () => {
-        URL.revokeObjectURL(url);
-        const max = W.uploadMaxEdge || 2400;
-        const r = Math.min(1, max / Math.max(img.width, img.height));
-        const c = document.createElement("canvas");
-        c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
-        const ctx = c.getContext("2d");
-        ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height);
-        ctx.drawImage(img, 0, 0, c.width, c.height);
-        resolve(c.toDataURL("image/jpeg", W.uploadQuality || 0.88).split(",")[1]);
-      };
-      img.onerror = () => { URL.revokeObjectURL(url); reject(Object.assign(new Error("decode"), { unsupported: true })); };
-      img.src = url;
-    });
+    // 1) 세션 열기
+    const openSession = async (f) => {
+      const res = await fetch(W.uploadUrl, {
+        method: "POST",
+        body: JSON.stringify({ token: W.uploadToken, origin: location.origin, name: f.name, size: f.size, type: f.type || (kind(f) === "video" ? "video/mp4" : "image/jpeg"), sender: f._sender }),
+      });
+      const json = await res.json();
+      if (!json.ok) throw Object.assign(new Error(json.error || "init"), { code: json.error });
+      return json.url;
+    };
+    // 2) 조각 전송 (308 = 계속, 200/201 = 완료). 실패한 조각은 서버가 받은 위치부터 다시
+    const putChunks = async (f, url, onProgress) => {
+      let start = 0, retries = 0;
+      while (start < f.size) {
+        const end = Math.min(start + CHUNK, f.size);
+        let res;
+        try {
+          res = await fetch(url, { method: "PUT", headers: { "Content-Range": `bytes ${start}-${end - 1}/${f.size}` }, body: f.slice(start, end) });
+        } catch (e) { res = null; }
+        if (res && (res.status === 200 || res.status === 201)) { onProgress(1); return; }
+        if (res && res.status === 308) {
+          const r = res.headers.get("Range");                       // "bytes=0-8388607"
+          start = r ? Number(r.split("-")[1]) + 1 : end; retries = 0;
+          onProgress(start / f.size); continue;
+        }
+        if (++retries > 4) throw new Error("chunk " + (res ? res.status : "network"));
+        await new Promise((r) => setTimeout(r, 1500 * retries));
+        // 서버가 어디까지 받았는지 물어보고 이어서
+        try {
+          const q = await fetch(url, { method: "PUT", headers: { "Content-Range": `bytes */${f.size}` } });
+          if (q.status === 308) { const r = q.headers.get("Range"); start = r ? Number(r.split("-")[1]) + 1 : start; }
+          else if (q.status === 200 || q.status === 201) { onProgress(1); return; }
+        } catch {}
+      }
+    };
 
     const send = async (f) => {
-      f._state = "전송 중"; f._li.dataset.state = f._state;
+      f._state = "준비 중"; f._li.dataset.state = f._state;
       try {
-        const data = await shrink(f);
-        const res = await fetch(W.uploadUrl, { method: "POST", body: JSON.stringify({ token: W.uploadToken, name: f.name, sender: f._sender, data }) });
-        const json = await res.json();
-        if (!json.ok) throw new Error(json.error || "fail");
+        const url = await openSession(f);
+        await putChunks(f, url, (p) => { f._li.dataset.state = p >= 1 ? "완료" : `${Math.floor(p * 100)}%`; });
         f._state = "완료";
       } catch (err) {
         console.error(err);
-        f._state = err.unsupported ? "형식 미지원" : "실패";
+        f._state = err.code === "limit" ? "한도 초과" : err.code === "closed" ? "접수 마감" : err.code === "too large" ? "용량 초과" : "실패";
       }
       f._li.dataset.state = f._state;
     };
@@ -310,7 +342,7 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!W.uploadUrl) { toast("아직 업로드 주소가 설정되지 않았습니다"); return; }
-      const queue = files.filter((f) => f._state !== "완료" && f._state !== "형식 미지원");
+      const queue = files.filter((f) => f._state !== "완료");
       if (!queue.length) return;
       uploading = true; submit.disabled = true; input.disabled = true;
       const sender = $("#uploadSender").value.trim();
@@ -326,12 +358,13 @@
       await Promise.all(Array.from({ length: Math.min(PARALLEL, queue.length) }, worker));
       uploading = false;
       const ok = queue.filter((f) => f._state === "완료").length;
-      const bad = queue.filter((f) => f._state === "실패").length;
-      const unsup = queue.filter((f) => f._state === "형식 미지원").length;
-      status.textContent = ok === queue.length ? `${ok}장 모두 도착했습니다. 고맙습니다 ♥`
-        : `${ok}장 도착` + (bad ? `, ${bad}장 실패 — 다시 보내기를 눌러 주세요` : "") + (unsup ? `, ${unsup}장은 이 브라우저가 열 수 없는 형식입니다` : "");
+      const bad = queue.length - ok;
+      const closed = queue.some((f) => f._state === "접수 마감");
+      status.textContent = ok === queue.length ? `${ok}개 모두 도착했습니다. 고맙습니다 ♥`
+        : closed ? "사진 편지함 접수가 마감되었습니다"
+        : `${ok}개 도착, ${bad}개 실패 — 다시 보내기를 눌러 주세요`;
       files = files.filter((f) => f._state !== "완료");
-      input.disabled = false; submit.disabled = !files.some((f) => f._state !== "형식 미지원");
+      input.disabled = false; submit.disabled = !files.length;
       submit.textContent = bad ? "다시 보내기" : "보내기";
     });
   });
