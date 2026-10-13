@@ -1,0 +1,7 @@
+# DSLR 원본은 올리지 않는다 (웹용 사본만 assets/photos 에)
+originals/*
+!originals/.gitkeep
+
+.DS_Store
+Thumbs.db
+desktop.ini

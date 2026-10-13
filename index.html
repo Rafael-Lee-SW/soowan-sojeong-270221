@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko" data-theme="cream">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>수완 ♥ 소정 — 2027.02.21</title>
+  <meta name="description" content="2027년 2월 21일 일요일 낮 12시 30분, 엘블레스">
+
+  <!-- 카카오톡/메신저 미리보기 -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="수완 ♥ 소정 결혼합니다">
+  <meta property="og:description" content="2027년 2월 21일 일요일 12시 30분 · 엘블레스">
+  <meta property="og:image" content="assets/illust/running@800.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ───────── 봉투 인트로 ───────── -->
+<div class="envelope" id="envelope" aria-hidden="true">
+  <div class="envelope__paper">
+    <div class="envelope__back"></div>
+    <div class="envelope__letter">
+      <span class="envelope__to">To. 소중한 당신에게</span>
+    </div>
+    <div class="envelope__front"></div>
+    <div class="envelope__flap"></div>
+    <div class="envelope__seal">♥</div>
+  </div>
+  <p class="envelope__hint">탭하여 열기</p>
+</div>
+
+<main class="page">
+
+  <!-- ───────── 1. 히어로 ───────── -->
+  <section class="hero" id="hero">
+    <div class="hero__letters" aria-hidden="true">
+      <span class="letter letter--1"></span>
+      <span class="letter letter--2"></span>
+      <span class="letter letter--3"></span>
+    </div>
+    <p class="hero__eyebrow reveal">We're getting married</p>
+    <figure class="hero__art reveal">
+      <img src="assets/illust/running.jpg" srcset="assets/illust/running@800.jpg 800w, assets/illust/running.jpg 1600w" sizes="(max-width: 520px) 100vw, 520px" alt="달려가는 신랑 신부 그림" fetchpriority="high">
+    </figure>
+    <h1 class="hero__names reveal">
+      <span data-bind="groom.en">Soowan</span>
+      <span class="hero__amp">&amp;</span>
+      <span data-bind="bride.en">Sojeong</span>
+    </h1>
+    <p class="hero__date reveal" data-bind="dateEn">Sunday, February 21, 2027 · 12:30 PM</p>
+    <p class="hero__venue reveal" data-bind="venue.name">엘블레스</p>
+    <div class="hero__scroll" aria-hidden="true"><span></span></div>
+  </section>
+
+  <!-- ───────── 2. 초대 글 ───────── -->
+  <section class="section greeting" id="greeting">
+    <p class="section__label reveal">Invitation</p>
+    <h2 class="section__title reveal" data-bind="greeting.title">소중한 분들을 초대합니다</h2>
+    <p class="greeting__body reveal" data-bind="greeting.body"></p>
+
+    <div class="families reveal">
+      <p class="families__row">
+        <span class="families__parents"><b data-bind="groom.father"></b> · <b data-bind="groom.mother"></b>의 <span data-bind="groom.relation"></span></span>
+        <span class="families__name" data-bind="groom.name"></span>
+      </p>
+      <p class="families__row">
+        <span class="families__parents"><b data-bind="bride.father"></b> · <b data-bind="bride.mother"></b>의 <span data-bind="bride.relation"></span></span>
+        <span class="families__name" data-bind="bride.name"></span>
+      </p>
+    </div>
+
+    <div class="contact reveal" id="contact">
+      <button class="btn btn--ghost" data-action="toggle" data-target="#contactPanel">연락하기</button>
+      <div class="contact__panel" id="contactPanel" hidden>
+        <div class="contact__col">
+          <p class="contact__who">신랑측</p>
+          <a class="contact__item" data-tel="groom.tel"><span data-bind="groom.name"></span><i>☎</i></a>
+        </div>
+        <div class="contact__col">
+          <p class="contact__who">신부측</p>
+          <a class="contact__item" data-tel="bride.tel"><span data-bind="bride.name"></span><i>☎</i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── 3. 달력 ───────── -->
+  <section class="section calendar" id="calendar">
+    <p class="section__label reveal">Save the date</p>
+    <h2 class="section__title reveal" data-bind="dateText">2027년 2월 21일 일요일 낮 12시 30분</h2>
+    <div class="calendar__grid reveal" id="calendarGrid"></div>
+    <p class="calendar__dday reveal" id="dday"></p>
+  </section>
+
+  <!-- ───────── 4. 갤러리 ───────── -->
+  <section class="section gallery" id="gallery">
+    <p class="section__label reveal">Gallery</p>
+    <h2 class="section__title reveal">우리의 순간들</h2>
+    <div class="gallery__grid reveal" id="galleryGrid"></div>
+  </section>
+
+  <!-- ───────── 5. 오시는 길 ───────── -->
+  <section class="section location" id="location">
+    <p class="section__label reveal">Location</p>
+    <h2 class="section__title reveal"><span data-bind="venue.name"></span> <small data-bind="venue.hall"></small></h2>
+    <p class="location__addr reveal"><span data-bind="venue.address"></span></p>
+    <div class="map reveal" id="map">
+      <div class="map__placeholder">
+        <span>지도</span>
+        <small>카카오맵 키 등록 후 표시됩니다</small>
+      </div>
+    </div>
+    <div class="location__apps reveal">
+      <a class="btn btn--ghost" data-href="venue.naverMapUrl" target="_blank" rel="noopener">네이버지도</a>
+      <a class="btn btn--ghost" data-href="venue.kakaoMapUrl" target="_blank" rel="noopener">카카오맵</a>
+      <button class="btn btn--ghost" data-action="copy" data-copy="venue.address">주소 복사</button>
+    </div>
+    <dl class="location__guide reveal" id="locationGuide"></dl>
+  </section>
+
+  <!-- ───────── 6. 마음 전하실 곳 ───────── -->
+  <section class="section gift" id="gift">
+    <p class="section__label reveal">With love</p>
+    <h2 class="section__title reveal">마음 전하실 곳</h2>
+    <p class="gift__note reveal">참석이 어려워 직접 축하를 전하지 못하는 분들을 위해<br>계좌번호를 안내드립니다. 너그러운 마음으로 양해 부탁드립니다.</p>
+    <div class="accordion reveal" id="accounts"></div>
+  </section>
+
+  <!-- ───────── 7. 사진 편지함 ───────── -->
+  <section class="section letterbox" id="letterbox">
+    <p class="section__label reveal">Photo letter</p>
+    <h2 class="section__title reveal">사진을 편지로 보내주세요</h2>
+    <figure class="letterbox__art reveal">
+      <img src="assets/illust/wheelbarrow.jpg" srcset="assets/illust/wheelbarrow@800.jpg 800w, assets/illust/wheelbarrow.jpg 1600w" sizes="(max-width: 520px) 100vw, 520px" alt="수레에 탄 신부를 미는 신랑 그림" loading="lazy">
+    </figure>
+    <p class="letterbox__desc reveal">결혼식 날 찍어주신 사진을 이곳에 담아주시면<br>저희 두 사람에게 바로 도착합니다.</p>
+
+    <form class="upload reveal" id="uploadForm">
+      <label class="upload__drop" for="uploadInput">
+        <input type="file" id="uploadInput" accept="image/*" multiple hidden>
+        <span class="upload__icon">✉</span>
+        <span class="upload__text">사진 선택하기</span>
+        <span class="upload__sub">여러 장 선택 가능 · 자동으로 적당한 크기로 줄여 보냅니다</span>
+      </label>
+      <input class="upload__name" type="text" id="uploadSender" placeholder="보내는 분 (선택)" maxlength="30" autocomplete="off">
+      <ul class="upload__list" id="uploadList"></ul>
+      <button class="btn btn--primary upload__submit" type="submit" id="uploadSubmit" disabled>보내기</button>
+      <p class="upload__status" id="uploadStatus"></p>
+    </form>
+  </section>
+
+  <!-- ───────── 8. 푸터 ───────── -->
+  <footer class="footer">
+    <div class="footer__share">
+      <button class="btn btn--primary" id="shareKakao" hidden>카카오톡으로 공유</button>
+      <button class="btn btn--ghost" id="shareLink">링크 복사</button>
+    </div>
+    <p class="footer__names"><span data-bind="groom.name"></span> ♥ <span data-bind="bride.name"></span></p>
+    <p class="footer__thanks">Thank you for being part of our story</p>
+
+    <!-- 검토용 테마 전환 — 확정 후 제거 -->
+    <div class="themeSwitch" id="themeSwitch">
+      <button data-theme="cream">크림</button>
+      <button data-theme="white">화이트</button>
+    </div>
+  </footer>
+</main>
+
+<!-- 라이트박스 -->
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lightbox__close" aria-label="닫기">×</button>
+  <button class="lightbox__nav lightbox__nav--prev" aria-label="이전">‹</button>
+  <img class="lightbox__img" alt="">
+  <button class="lightbox__nav lightbox__nav--next" aria-label="다음">›</button>
+  <p class="lightbox__count"></p>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/config.js"></script>
+<script src="js/photos.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
