@@ -128,16 +128,39 @@
   /* ── 오시는 길 ── */
   (() => {
     $("#locationGuide").innerHTML = (W.venue.guide || []).map((g) => `<div><dt>${g.title}</dt><dd>${g.text}</dd></div>`).join("");
-    if (!W.kakaoMapKey) return;
-    const s = document.createElement("script");
-    s.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${W.kakaoMapKey}&autoload=false`;
-    s.onload = () => kakao.maps.load(() => {
-      const el = $("#map"); el.innerHTML = "";
-      const pos = new kakao.maps.LatLng(W.venue.lat, W.venue.lng);
-      const map = new kakao.maps.Map(el, { center: pos, level: 3, draggable: false });
-      new kakao.maps.Marker({ map, position: pos });
-    });
-    document.head.append(s);
+    const el = $("#map"), v = W.venue;
+    const load = (src) => new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.append(s); });
+
+    if (W.naverMapClientId) {
+      // 네이버 지도 (NCP Dynamic Map + Geocoder)
+      load(`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${W.naverMapClientId}&submodules=geocoder`).then(() => {
+        const draw = (lat, lng) => {
+          el.innerHTML = "";
+          const pos = new naver.maps.LatLng(lat, lng);
+          const map = new naver.maps.Map(el, { center: pos, zoom: 16, draggable: false, scrollWheel: false, pinchZoom: false, zoomControl: false, mapDataControl: false, logoControlOptions: { position: naver.maps.Position.BOTTOM_LEFT } });
+          new naver.maps.Marker({ map, position: pos, title: v.name });
+        };
+        naver.maps.Service.geocode({ query: v.addressShort }, (st, r) => {
+          const a = r && r.v2 && r.v2.addresses && r.v2.addresses[0];
+          a ? draw(+a.y, +a.x) : draw(v.lat, v.lng);
+        });
+      }).catch(() => {});
+      return;
+    }
+    if (W.kakaoMapKey) {
+      // 카카오맵 + 주소→좌표
+      load(`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${W.kakaoMapKey}&autoload=false&libraries=services`).then(() => kakao.maps.load(() => {
+        const draw = (lat, lng) => {
+          el.innerHTML = "";
+          const pos = new kakao.maps.LatLng(lat, lng);
+          const map = new kakao.maps.Map(el, { center: pos, level: 3, draggable: false, scrollwheel: false, disableDoubleClickZoom: true });
+          new kakao.maps.Marker({ map, position: pos });
+        };
+        new kakao.maps.services.Geocoder().addressSearch(v.addressShort, (r, st) => {
+          st === kakao.maps.services.Status.OK && r[0] ? draw(+r[0].y, +r[0].x) : draw(v.lat, v.lng);
+        });
+      })).catch(() => {});
+    }
   })();
 
   /* ── 계좌 아코디언 ── */
@@ -219,7 +242,7 @@
           const dataUrl = await shrink(f);
           const res = await fetch(W.uploadUrl, {
             method: "POST",
-            body: JSON.stringify({ name: f.name, sender, data: dataUrl.split(",")[1] }),
+            body: JSON.stringify({ token: W.uploadToken, name: f.name, sender, data: dataUrl.split(",")[1] }),
           });
           const json = await res.json();
           if (!json.ok) throw new Error(json.error || "fail");
@@ -253,7 +276,7 @@
         objectType: "feed",
         content: {
           title: W.shareTitle, description: W.shareDesc,
-          imageUrl: new URL("assets/illust/running@800.jpg", location.href).href,
+          imageUrl: new URL("assets/illust/og.jpg", location.href).href,
           link: { mobileWebUrl: location.href, webUrl: location.href },
         },
         buttons: [{ title: "청첩장 보기", link: { mobileWebUrl: location.href, webUrl: location.href } }],

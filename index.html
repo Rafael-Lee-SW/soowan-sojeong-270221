@@ -11,7 +11,7 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="수완 ♥ 소정 결혼합니다">
   <meta property="og:description" content="2027년 2월 21일 일요일 12시 30분 · 엘블레스">
-  <meta property="og:image" content="https://rafael-lee-sw.github.io/soowan-sojeong-270221/assets/illust/running@800.jpg">
+  <meta property="og:image" content="https://rafael-lee-sw.github.io/soowan-sojeong-270221/assets/illust/og.jpg">
   <meta property="og:url" content="https://rafael-lee-sw.github.io/soowan-sojeong-270221/">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,7 +46,10 @@
     </div>
     <p class="hero__eyebrow reveal">We're getting married</p>
     <figure class="hero__art reveal">
-      <img src="assets/illust/running.jpg" srcset="assets/illust/running@800.jpg 800w, assets/illust/running.jpg 1600w" sizes="(max-width: 520px) 100vw, 520px" alt="달려가는 신랑 신부 그림" fetchpriority="high">
+      <picture>
+        <source type="image/webp" srcset="assets/illust/running@800.webp 800w, assets/illust/running.webp 1400w" sizes="(max-width: 520px) 90vw, 420px">
+        <img src="assets/illust/running@800.png" srcset="assets/illust/running@800.png 800w, assets/illust/running.png 1400w" sizes="(max-width: 520px) 90vw, 420px" alt="달려가는 신랑 신부 그림" fetchpriority="high">
+      </picture>
     </figure>
     <h1 class="hero__names reveal">
       <span data-bind="groom.en">Soowan</span>
@@ -109,7 +112,7 @@
   <section class="section location" id="location">
     <p class="section__label reveal">Location</p>
     <h2 class="section__title reveal"><span data-bind="venue.name"></span> <small data-bind="venue.hall"></small></h2>
-    <p class="location__addr reveal"><span data-bind="venue.address"></span></p>
+    <p class="location__addr reveal"><span data-bind="venue.address"></span><br><a class="location__tel" data-tel="venue.tel"><span data-bind="venue.tel"></span></a></p>
     <div class="map reveal" id="map">
       <div class="map__placeholder">
         <span>지도</span>
@@ -119,7 +122,8 @@
     <div class="location__apps reveal">
       <a class="btn btn--ghost" data-href="venue.naverMapUrl" target="_blank" rel="noopener">네이버지도</a>
       <a class="btn btn--ghost" data-href="venue.kakaoMapUrl" target="_blank" rel="noopener">카카오맵</a>
-      <button class="btn btn--ghost" data-action="copy" data-copy="venue.address">주소 복사</button>
+      <a class="btn btn--ghost" data-href="venue.tmapUrl" target="_blank" rel="noopener">티맵</a>
+      <button class="btn btn--ghost" data-action="copy" data-copy="venue.addressShort">주소 복사</button>
     </div>
     <dl class="location__guide reveal" id="locationGuide"></dl>
   </section>
@@ -137,7 +141,10 @@
     <p class="section__label reveal">Photo letter</p>
     <h2 class="section__title reveal">사진을 편지로 보내주세요</h2>
     <figure class="letterbox__art reveal">
-      <img src="assets/illust/wheelbarrow.jpg" srcset="assets/illust/wheelbarrow@800.jpg 800w, assets/illust/wheelbarrow.jpg 1600w" sizes="(max-width: 520px) 100vw, 520px" alt="수레에 탄 신부를 미는 신랑 그림" loading="lazy">
+      <picture>
+        <source type="image/webp" srcset="assets/illust/wheelbarrow@800.webp 800w, assets/illust/wheelbarrow.webp 1400w" sizes="(max-width: 520px) 80vw, 360px">
+        <img src="assets/illust/wheelbarrow@800.png" srcset="assets/illust/wheelbarrow@800.png 800w, assets/illust/wheelbarrow.png 1400w" sizes="(max-width: 520px) 80vw, 360px" alt="수레에 탄 신부를 미는 신랑 그림" loading="lazy">
+      </picture>
     </figure>
     <p class="letterbox__desc reveal">결혼식 날 찍어주신 사진을 이곳에 담아주시면<br>저희 두 사람에게 바로 도착합니다.</p>
 

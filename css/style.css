@@ -201,7 +201,7 @@ small { font-weight: 300; }
   color: var(--ink-soft);
 }
 .hero__art { margin: 0; width: 100%; max-width: 420px; }
-.hero__art img { mix-blend-mode: var(--illust-blend); }
+.hero__art img { margin: 0 auto; }
 .hero__names {
   margin: 8px 0 6px;
   font-family: var(--font-en); font-weight: 400; font-size: clamp(30px, 9vw, 40px); letter-spacing: .02em; line-height: 1.1;
@@ -264,10 +264,11 @@ small { font-weight: 300; }
 }
 .calendar__grid .dow { font-size: 12px; letter-spacing: .1em; color: var(--ink-soft); padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 6px; }
 .calendar__grid .dow.sun, .calendar__grid .day.sun { color: var(--accent); }
-.calendar__grid .day { aspect-ratio: 1; display: grid; place-items: center; position: relative; }
-.calendar__grid .day.is-wedding { color: #fff; font-weight: 500; }
+.calendar__grid .day { aspect-ratio: 1; display: grid; place-items: center; position: relative; isolation: isolate; }
+.calendar__grid .day.is-wedding { color: #fff; font-weight: 600; }
 .calendar__grid .day.is-wedding::before {
-  content: ""; position: absolute; width: 34px; height: 34px; border-radius: 50%; background: var(--accent); z-index: -1;
+  content: ""; position: absolute; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); z-index: -1;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 .calendar__grid .day.is-wedding::after {
   content: "♥"; position: absolute; top: -8px; right: 2px; font-size: 11px; color: var(--accent);
@@ -312,7 +313,8 @@ small { font-weight: 300; }
 .location__apps { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 36px; }
 .location__guide { margin: 0; text-align: left; display: grid; gap: 16px; }
 .location__guide dt { font-size: 12.5px; letter-spacing: .12em; color: var(--accent); margin-bottom: 2px; }
-.location__guide dd { margin: 0; font-size: 14.5px; }
+.location__guide dd { margin: 0; font-size: 14.5px; white-space: pre-line; word-break: keep-all; }
+.location__tel { font-family: var(--font-en); font-size: 15px; letter-spacing: .04em; border-bottom: 1px solid var(--line); }
 
 /* ─────────────────────────────────────────────
    6. 마음 전하실 곳
@@ -336,7 +338,7 @@ small { font-weight: 300; }
    7. 사진 편지함
    ───────────────────────────────────────────── */
 .letterbox__art { margin: -8px auto 8px; max-width: 360px; }
-.letterbox__art img { mix-blend-mode: var(--illust-blend); }
+.letterbox__art img { margin: 0 auto; }
 .letterbox__desc { margin: 0 0 28px; font-size: 14.5px; color: var(--ink-soft); }
 
 .upload { display: grid; gap: 12px; }
