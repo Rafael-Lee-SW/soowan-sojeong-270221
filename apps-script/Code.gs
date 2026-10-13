@@ -17,9 +17,11 @@
  *  4. 생성된 "웹 앱 URL" 을 js/config.js 의 uploadUrl 에 붙여넣는다.
  *  5. 코드를 수정하면 반드시 "배포 → 배포 관리 → 연필 → 버전: 새 버전 → 배포" 해야 반영된다. (URL 은 그대로)
  *
- * 운영 스위치 — 재배포 없이 "프로젝트 설정 → 스크립트 속성" 에서 켜고 끈다:
- *  - test_mode = 1 : 기간 제한 무시 (테스트할 때만. 끝나면 반드시 삭제)
- *  - closed    = 1 : 즉시 전부 거부 (비상 정지)
+ * 운영 스위치 — 재배포 없이, 편집기 상단에서 함수를 고르고 ▶ 실행:
+ *  - enableTestMode() / disableTestMode() : 기간 제한 무시 (테스트할 때만. 끝나면 반드시 disable)
+ *  - closeUploads() / openUploads()       : 즉시 전부 거부 (비상 정지) / 해제
+ *  - showStatus()                         : 현재 상태·누적량 확인 (실행 로그에 출력)
+ *  (같은 값을 "프로젝트 설정 → 스크립트 속성 수정" 에서 직접 넣어도 된다: test_mode=1, closed=1)
  *
  * 남용 방지:
  *  - TOKEN          : config.js 의 uploadToken 과 같아야 함. 소스에 노출되지만 무작위 봇은 막는다.
@@ -116,6 +118,17 @@ function doPost(e) {
 // 브라우저에서 URL 을 직접 열었을 때 살아있는지 확인용
 function doGet() {
   return json({ ok: true, service: "photo-letterbox", mode: "resumable" });
+}
+
+// ── 운영 스위치: 편집기 상단 함수 선택 → ▶ 실행 (스크립트 속성 화면을 안 거쳐도 됨) ──
+function enableTestMode()  { PropertiesService.getScriptProperties().setProperty("test_mode", "1");  console.log("test_mode ON — 기간 제한 무시"); }
+function disableTestMode() { PropertiesService.getScriptProperties().deleteProperty("test_mode");    console.log("test_mode OFF"); }
+function closeUploads()    { PropertiesService.getScriptProperties().setProperty("closed", "1");     console.log("closed — 모든 업로드 거부"); }
+function openUploads()     { PropertiesService.getScriptProperties().deleteProperty("closed");       console.log("open"); }
+function showStatus() {
+  const p = PropertiesService.getScriptProperties().getProperties();
+  console.log(JSON.stringify({ test_mode: !!p.test_mode, closed: !!p.closed, videos_total: p.videos_total || 0, bytes_total_GB: (Number(p.bytes_total || 0) / 1073741824).toFixed(2),
+    today_images: p["images_" + Utilities.formatDate(new Date(), "Asia/Seoul", "yyyyMMdd")] || 0 }, null, 2));
 }
 
 // 한도에 걸려 복구할 때 편집기에서 직접 실행
