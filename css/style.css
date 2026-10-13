@@ -153,11 +153,13 @@ small { font-weight: 300; }
   font-family: var(--font-en); font-style: italic; font-size: 17px; color: #6b6158;
   box-shadow: 0 1px 2px rgba(0,0,0,.08);
   transition: transform .9s var(--ease) .35s;
+  z-index: 1;
 }
 .envelope__front {
   top: 0; bottom: 0; border-radius: 6px;
-  background: linear-gradient(to bottom, transparent 46%, #efe6d6 46%);
+  background: #efe6d6;
   clip-path: polygon(0 0, 50% 52%, 100% 0, 100% 100%, 0 100%);
+  z-index: 2;
 }
 .envelope__flap {
   top: 0; height: 52%;
@@ -166,7 +168,7 @@ small { font-weight: 300; }
   transform-origin: top center;
   transform: rotateX(0deg);
   transition: transform .8s var(--ease);
-  z-index: 2;
+  z-index: 3;
 }
 .envelope__seal {
   position: absolute; left: 50%; top: 52%; translate: -50% -50%;
@@ -188,7 +190,7 @@ small { font-weight: 300; }
    ───────────────────────────────────────────── */
 .hero {
   position: relative;
-  min-height: 100svh;
+  min-height: min(100svh, 820px);
   padding: 72px var(--gutter) 80px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center;
@@ -202,9 +204,10 @@ small { font-weight: 300; }
 .hero__art img { mix-blend-mode: var(--illust-blend); }
 .hero__names {
   margin: 8px 0 6px;
-  font-family: var(--font-en); font-weight: 400; font-size: 40px; letter-spacing: .02em; line-height: 1.1;
+  font-family: var(--font-en); font-weight: 400; font-size: clamp(30px, 9vw, 40px); letter-spacing: .02em; line-height: 1.1;
+  white-space: nowrap;
 }
-.hero__amp { font-style: italic; color: var(--accent); margin: 0 10px; font-size: .8em; }
+.hero__amp { font-style: italic; color: var(--accent); margin: 0 6px; font-size: .8em; }
 .hero__date { margin: 0; font-family: var(--font-en); font-size: 17px; letter-spacing: .06em; }
 .hero__venue { margin: 2px 0 0; font-size: 14px; color: var(--ink-soft); letter-spacing: .1em; }
 

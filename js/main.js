@@ -60,7 +60,8 @@
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
   }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
-  $$(".reveal").forEach((el) => io.observe(el));
+  if (new URLSearchParams(location.search).has("reveal")) $$(".reveal").forEach((el) => el.classList.add("is-in")); // 전체 스크린샷용
+  else $$(".reveal").forEach((el) => io.observe(el));
 
   /* ── 달력 ── */
   const wd = new Date(W.date);
