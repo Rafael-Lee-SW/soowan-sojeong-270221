@@ -395,14 +395,41 @@ small { font-weight: 300; }
 .footer { padding: 72px var(--gutter) 48px; text-align: center; background: var(--bg-soft); }
 .footer__bow { display: block; width: 180px; margin: 0 auto 6px; }
 .footer__ribbon { position: relative; width: 260px; margin: 0 auto 18px; }
-.footer__ribbon span {
-  position: absolute; inset: 0; display: grid; place-items: center; padding-bottom: 6px;
-  font-family: var(--font-hand); font-weight: 600; font-size: 24px; color: #3c3530; letter-spacing: .06em;
-}
+.footer__ribbon-text { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.footer__ribbon-text text { font-family: var(--font-hand); font-weight: 600; font-size: 24px; fill: #3c3530; letter-spacing: .04em; }
 .footer__names { margin: 0; font-size: 16px; letter-spacing: .1em; font-weight: 400; }
 .footer__thanks { margin: 6px 0 32px; font-size: 13.5px; color: var(--ink-soft); }
 .footer__share { display: flex; justify-content: center; gap: 8px; }
 
+
+/* ─────────────────────────────────────────────
+   데스크톱 (≥ 960px): 왼쪽 고정 히어로 + 오른쪽 스크롤 본문
+   ───────────────────────────────────────────── */
+@media (min-width: 960px) {
+  :root { --page-w: 1200px; --gutter: 48px; }
+  .page {
+    display: grid; grid-template-columns: minmax(440px, 46%) 1fr;
+    margin: 0 auto; min-height: 100vh;
+    overflow: clip;                       /* overflow:hidden 이면 sticky 가 죽는다 */
+  }
+  .hero {
+    position: sticky; top: 0; align-self: start;
+    height: 100vh; height: 100svh; min-height: 0;
+    border-right: 1px solid var(--line);
+    padding: 72px 56px 80px;
+  }
+  .hero__art { max-width: 460px; }
+  .content { min-width: 0; }
+  /* 본문 가독폭 ~560px 로 가운데 정렬 */
+  .section, .footer { padding-left: max(var(--gutter), calc((100% - 560px) / 2)); padding-right: max(var(--gutter), calc((100% - 560px) / 2)); }
+  .section { padding-top: 104px; padding-bottom: 104px; }
+  .greeting { padding-left: max(var(--gutter), calc((100% - 480px) / 2)); padding-right: max(var(--gutter), calc((100% - 480px) / 2)); }
+  .greeting__vine { right: 36px; top: 96px; width: 48px; }
+  .film { margin-left: 0; margin-right: 0; }
+  .film__label { margin-left: 0; margin-right: 0; }
+  .film__strip { padding-left: 8px; padding-right: 8px; }   /* 폴라로이드 기울기·그림자 잘림 방지 */
+  .map { max-width: 560px; margin-left: auto; margin-right: auto; }
+}
 
 /* 토스트 */
 .toast {

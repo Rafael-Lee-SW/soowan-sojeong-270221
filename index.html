@@ -25,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Noto+Serif+KR:wght@300;400&family=Caveat:wght@500;600&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261014a">
+  <link rel="stylesheet" href="css/style.css?v=20261014b">
 </head>
 <body>
 
@@ -66,6 +66,7 @@
     <div class="hero__scroll" aria-hidden="true"><small>scroll</small><span></span></div>
   </section>
 
+  <div class="content">
   <!-- ───────── 2. 초대 글 ───────── -->
   <section class="section greeting" id="greeting">
     <!-- 실물 청첩장 뒷면의 세로 꽃 덩굴 -->
@@ -188,7 +189,8 @@
     </picture>
     <div class="footer__ribbon reveal">
       <img src="assets/illust/ribbon.webp" alt="" loading="lazy">
-      <span>Thank you</span>
+      <!-- textLength 로 폭을 고정해 폰트가 바뀌어도 리본 띠 밖으로 나가지 않게 -->
+      <svg class="footer__ribbon-text" viewBox="0 0 260 74" aria-hidden="true"><text x="130" y="34" text-anchor="middle" textLength="112" lengthAdjust="spacingAndGlyphs">Thank you</text></svg>
     </div>
     <p class="footer__names reveal"><span data-bind="groom.name"></span> ♥ <span data-bind="bride.name"></span></p>
     <p class="footer__thanks reveal">저희의 이야기에 함께해 주셔서 고맙습니다</p>
@@ -197,6 +199,7 @@
       <button class="btn btn--ghost" id="shareLink">링크 복사</button>
     </div>
   </footer>
+  </div><!-- /.content -->
 </main>
 
 <!-- 라이트박스 -->
@@ -210,8 +213,8 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="js/config.js?v=20261014a"></script>
-<script src="js/photos.js?v=20261014a"></script>
-<script src="js/main.js?v=20261014a"></script>
+<script src="js/config.js?v=20261014b"></script>
+<script src="js/photos.js?v=20261014b"></script>
+<script src="js/main.js?v=20261014b"></script>
 </body>
 </html>
