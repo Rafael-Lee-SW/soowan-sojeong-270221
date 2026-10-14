@@ -30,31 +30,34 @@ python -m http.server 8000
 2. `python tools/resize-photos.py`
 3. commit & push
 
-## 나중에 반영할 것 (실물 청첩장 기준)
+## 실물 청첩장 반영 상태
 
-실물 청첩장(`청첩장_실물 (1).jpg`, `(2).jpg`)에 쓰인 **약도**와 **손으로 수정된 그림**은 아직 웹에 반영하지 않았다.
-받으면 아래 순서로 넣는다.
+실물 청첩장(`assets/source/실물 앞면_달리는 신랑신부.jpg`, `실물 뒷면_꽃덩굴.jpg`)의 그림은 반영 완료. **약도**만 남았다.
 
-### 1) 약도
+### 1) 약도 (아직)
 1. 약도 파일을 `assets/illust/map.png` (또는 .webp/.jpg) 로 저장 — 4:3 비율이 지도 칸에 가장 잘 맞음. 흰 배경이면 `python tools/cut-illust.py <원본> map 1200` 으로 투명화 가능
 2. `js/config.js` → `venue.mapImage: "assets/illust/map.png"`
 3. 끝. (`index.html` 의 "약도 준비 중" 플레이스홀더는 자동으로 교체됨)
 
-### 2) 손으로 수정된 그림으로 교체
-현재 쓰는 파일과 위치 (같은 파일명으로 덮어쓰면 코드 수정 없이 교체됨):
+### 2) 실물 그림 (반영 완료)
 
 | 그림 | 파일 | 쓰이는 곳 |
 |---|---|---|
 | 달리는 신랑신부 (실물 앞면, 흑백 선화 + 반짝이) | `assets/illust/running.{png,webp}`, `running@800.*` | 히어로 (`index.html` `.hero__art`) |
-| 수레 신랑신부 | `assets/illust/wheelbarrow.*`, `wheelbarrow@800.*` | 사진 편지함 (`.letterbox__art`) |
-| 인사하는 신랑신부 | `assets/illust/bow.*`, `bow@600.*` | 푸터 (`.footer__bow`) |
-| 봉투 | `assets/illust/envelope.*`, `envelope@600.*` | 인트로 (`.envelope__paper`) |
-| 우편가방 | `assets/illust/mailbag@300.*` | 업로드 버튼 (`.upload__icon`) |
-| 꽃 덩굴 (실물 뒷면 세로 장식) | 아직 없음 → `assets/illust/vine.*` 로 넣고 `.section__title` 옆이나 섹션 구분용으로 사용 | — |
+| 꽃 덩굴 (실물 뒷면 세로 장식) | `assets/illust/vine.*` | 초대글 오른쪽 (`.greeting__vine`) |
+| 앞면 전체 (손글씨 이름 + 그림) | `assets/illust/og.jpg` | 카카오톡 미리보기 |
 
-교체 절차: 원본을 `assets/source/` 에 두고 `python tools/cut-illust.py "assets/source/파일.png" running 1400`
-→ 배경 제거·크롭·PNG/WebP 생성. 신랑신부가 그림 중앙에 오도록 자동 패딩됨. `@800` 등 축소본도 함께 만들려면 폭을 바꿔 한 번 더 실행.
-교체 후 `assets/illust/og.jpg`(카카오톡 미리보기)도 다시 만들고 developers.kakao.com/tool/clear/og 에서 캐시 삭제.
+GPT 그림 그대로인 것: 수레 신랑신부(`wheelbarrow.*`, 사진 편지함), 인사하는 신랑신부(`bow.*`, 푸터), 봉투(`envelope.*`, 인트로), 우편가방(`mailbag@300.*`, 업로드 버튼).
+
+다시 만들기 (원본은 크림색 종이 질감이라 `cut-paper.py` 사용):
+```
+python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부.jpg" running     1400 --box 500,600,3000,2150 --drop-above 840 --min-area 250
+python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부.jpg" running@800  800 --box 500,600,3000,2150 --drop-above 840 --min-area 250
+python tools/cut-paper.py "assets/source/실물 뒷면_꽃덩굴.jpg"          vine        1200 --box 1560,0,1980,2480 --min-area 250 --pad 12
+```
+`--drop-above 840` 은 그림 위의 손글씨 "Soowan & Sojeong" 을 떼어내는 옵션(이름은 HTML 에서 폰트로 찍음).
+OG 는 같은 스크립트로 `--box 500,200,3000,2150` (손글씨 포함) 으로 뽑아 1200×630 흰 배경 가운데에 올린 것.
+OG 를 바꾸면 developers.kakao.com/tool/clear/og 에서 캐시 삭제.
 
 ### 3) 실물에서 가져온 문구·폰트 (이미 반영됨)
 - 인사말: 실물 뒷면 문구 그대로 (`config.js` `greeting.body`)
@@ -63,7 +66,7 @@ python -m http.server 8000
 
 ## 그림 추가하기
 
-GPT 등에서 받은 원본은 `assets/source/` 에 두고, 배경 제거·분할은 `tools/cut-illust.py` 로 한다(흰 배경 기준).
+원본은 `assets/source/` 에 두고, 배경 제거는 흰 배경이면 `tools/cut-illust.py`, 크림색·종이 질감 배경이면 `tools/cut-paper.py` 로 한다.
 
 ## 사진·동영상 편지함 연결
 

@@ -224,6 +224,10 @@ small { font-weight: 300; }
 /* ─────────────────────────────────────────────
    2. 초대 글
    ───────────────────────────────────────────── */
+/* 실물 뒷면처럼 오른쪽에 세로 꽃 덩굴 — 본문은 덩굴을 피해 조금 좁게 */
+.greeting { position: relative; padding-left: calc(var(--gutter) + 20px); padding-right: calc(var(--gutter) + 20px); }
+.greeting__vine { position: absolute; top: 64px; right: 10px; width: 40px; pointer-events: none; }
+.greeting__vine img { width: 100%; height: auto; }
 .greeting__body { margin: 0 auto 44px; font-size: 15.5px; line-height: 2.05; white-space: pre-line; word-break: keep-all; }
 .families { display: grid; gap: 10px; margin-bottom: 36px; }
 .families__row { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 14px; font-size: 15px; }

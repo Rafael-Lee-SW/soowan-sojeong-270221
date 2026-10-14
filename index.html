@@ -25,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Noto+Serif+KR:wght@300;400&family=Caveat:wght@500;600&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261013d">
+  <link rel="stylesheet" href="css/style.css?v=20261014a">
 </head>
 <body>
 
@@ -49,7 +49,7 @@
       <img class="letter letter--3" src="assets/illust/ico-letter.webp" alt="">
     </div>
     <p class="hero__eyebrow reveal">Kindly join us<br>for the wedding of</p>
-    <!-- TODO(그림 교체): 실물 청첩장에 쓰인 손수정본(흑백 선화+반짝이)을 받으면 assets/illust/running.* 를 같은 이름으로 덮어쓰면 됨 (README "나중에 반영할 것") -->
+    <!-- 실물 청첩장 앞면 그림(흑백 선화+반짝이) — assets/source/실물 앞면_달리는 신랑신부.jpg → tools/cut-paper.py -->
     <figure class="hero__art reveal">
       <picture>
         <source type="image/webp" srcset="assets/illust/running@800.webp 800w, assets/illust/running.webp 1400w" sizes="(max-width: 520px) 90vw, 420px">
@@ -68,6 +68,11 @@
 
   <!-- ───────── 2. 초대 글 ───────── -->
   <section class="section greeting" id="greeting">
+    <!-- 실물 청첩장 뒷면의 세로 꽃 덩굴 -->
+    <picture class="greeting__vine reveal" aria-hidden="true">
+      <source type="image/webp" srcset="assets/illust/vine.webp">
+      <img src="assets/illust/vine.png" alt="">
+    </picture>
     <p class="section__label reveal">Invitation</p>
     <h2 class="section__title reveal" data-bind="greeting.title">소중한 분들을 초대합니다</h2>
     <p class="greeting__body reveal" data-bind="greeting.body"></p>
@@ -205,8 +210,8 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="js/config.js?v=20261013d"></script>
-<script src="js/photos.js?v=20261013d"></script>
-<script src="js/main.js?v=20261013d"></script>
+<script src="js/config.js?v=20261014a"></script>
+<script src="js/photos.js?v=20261014a"></script>
+<script src="js/main.js?v=20261014a"></script>
 </body>
 </html>
