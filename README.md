@@ -55,12 +55,13 @@ python -m http.server 8000
 ```
 python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부(컬러).jpg" running     1400 --box 500,800,3000,2150 --min-area 250
 python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부(컬러).jpg" running@800  800 --box 500,800,3000,2150 --min-area 250
-python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow 1400 --box 700,800,2600,2150 --min-area 250
-python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow@800 800 --box 700,800,2600,2150 --min-area 250
+python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow 1400 --box 700,800,2600,2150 --min-area 250 --sheer 1480,860,2010,1310
+python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow@800 800 --box 700,800,2600,2150 --min-area 250 --sheer 1480,860,2010,1310
 python tools/cut-paper.py "assets/source/실물 뒷면_꽃덩굴.jpg"                vine        1200 --box 1560,0,1980,2480 --min-area 250 --pad 12
 python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부.jpg"       names       2000 --box 900,200,2800,1030 --drop-below 840 --min-area 250
 ```
-`--drop-above / --drop-below` 는 손글씨와 그림을 분리하는 옵션. 종이색과 비슷한 연분홍 드레스·피부·베일이 빠지면 `--paper` 값을 낮춘다(기본 5.5). OG 는 `names` + `running` 을 1200×630 흰 바탕에 올린 것.
+`--drop-above / --drop-below` 는 손글씨와 그림을 분리하는 옵션. 종이색과 비슷한 연분홍 드레스·피부·베일이 빠지면 `--paper` 값을 낮춘다(기본 5.5). `--sheer` 는 수레 그림의 베일(원본에서 드레스와 같은 연분홍)을 흰 배경에서 베일로 읽히게 반투명 처리하는 영역.
+그림 파일 주소에는 `?v=` 가 붙어 있다 — 그림을 바꾸면 `index.html` 에서 이 값도 올려야 브라우저 캐시가 갱신된다. OG 는 `names` + `running` 을 1200×630 흰 바탕에 올린 것.
 OG 를 바꾸면 developers.kakao.com/tool/clear/og 에서 캐시 삭제.
 
 ### 3) 실물에서 가져온 문구·폰트 (이미 반영됨)

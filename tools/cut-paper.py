@@ -11,6 +11,7 @@
   --min-area N         N px 미만 덩어리는 종이 얼룩으로 보고 버림 (기본 400)
   --paper T            "종이색" 판정 거리 (기본 5.5). 연분홍 드레스·피부가 빠지면 낮추고, 종이가 남으면 높인다
   --pad N              여백 px (기본 24, 리사이즈 전 기준)
+  --sheer L,T,R,B[,A]  이 영역(원본 px) 안의 연한 색(종이와 비슷한 베일 등)을 알파 A(기본 0.3)로 반투명하게 — 흰 배경에서 베일이 종이 잔여물처럼 보일 때
 
 방식 (스티커 컷):
   1) 종이 질감 노이즈를 흐려서 없앤 뒤, 가장자리 종이색(중앙값)과의 색 거리가 T 미만인 픽셀을 "종이 후보"로 본다
@@ -41,10 +42,10 @@ full = np.asarray(im).astype(np.float32)
 edge = np.concatenate([full[:60].reshape(-1, 3), full[-60:].reshape(-1, 3), full[:, :60].reshape(-1, 3), full[:, -60:].reshape(-1, 3)])
 bg = np.median(edge, 0)
 
-oy = 0
+ox = oy = 0
 if "box" in opt:
     L, T, R, B = map(int, opt["box"].split(","))
-    im = im.crop((L, T, R, B)); oy = T
+    im = im.crop((L, T, R, B)); ox, oy = L, T
 rgb = np.asarray(im).astype(np.float32)
 h, w = rgb.shape[:2]
 
@@ -90,9 +91,26 @@ alpha = np.where(fg, alpha, 0.0)
 alpha = ndimage.gaussian_filter(alpha, 0.6)
 alpha = np.where(fg, alpha, np.minimum(alpha, 0.5)).astype(np.float32)   # 바깥으로 번진 것은 약하게만
 alpha = np.clip(alpha, 0, 1).astype(np.float32)
+if "sheer" in opt:                                            # 베일 등 연한 영역만 반투명 (선·진한 색은 그대로)
+    v = [float(x) for x in opt["sheer"].split(",")]
+    L2, T2, R2, B2 = [int(x) for x in v[:4]]; A = v[4] if len(v) > 4 else 0.3
+    L2 -= ox; R2 -= ox; T2 -= oy; B2 -= oy
+    print("sheer region (crop px):", L2, T2, R2, B2)
+    region = np.zeros_like(fg); region[max(0, T2):max(0, B2), max(0, L2):max(0, R2)] = True
+    # 연한 색 덩어리(선으로 둘러싸인 영역) 단위로 고른다: 덩어리의 60% 이상이 상자 안에 있으면 통째로 반투명 → 상자 경계가 보이지 않음
+    plab, pn = ndimage.label(fg & (d_fine < 30))
+    pidx = np.arange(pn + 1)
+    inside = ndimage.sum(region, plab, index=pidx); total = ndimage.sum(np.ones_like(plab), plab, index=pidx)
+    pick = (inside >= 0.6 * np.maximum(total, 1)) & (total >= 50); pick[0] = False
+    pale = pick[plab]
+    print("sheer: pale regions picked", int(pick.sum()), "px", int(pale.sum()))
+    alpha = np.where(pale, np.minimum(alpha, A), alpha).astype(np.float32)
+else:
+    pale = np.zeros_like(fg)
 a3 = np.clip(alpha, 0.15, 1)[..., None]
 ink = (rgb - (1 - a3) * bg) / a3                              # orig = a*ink + (1-a)*bg
 ink = np.where(alpha[..., None] > 0, ink, rgb)
+ink = np.where(pale[..., None], rgb, ink)                     # 반투명 처리한 베일은 원래 색 그대로 (되돌리면 다시 진해짐)
 out = Image.fromarray(np.dstack([np.clip(ink, 0, 255), alpha * 255]).astype(np.uint8), "RGBA")
 
 pad = int(opt.get("pad", 24))
