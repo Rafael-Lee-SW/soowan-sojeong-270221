@@ -38,6 +38,16 @@
   safe("bind", () => {
     $$("[data-bind]").forEach((el) => { const v = get(el.dataset.bind); if (v != null) el.textContent = v; });
     $$("[data-href]").forEach((el) => { const v = get(el.dataset.href); if (v) el.href = v; else el.hidden = true; });
+    // 티맵: tmap:// 스킴은 휴대폰 앱에서만 열린다. PC 면 안내, 앱이 없어 1.5초 안에 화면이 안 바뀌면 스토어로
+    $$("[data-href='venue.tmapUrl']").forEach((el) => {
+      el.removeAttribute("target");
+      el.addEventListener("click", (e) => {
+        const ua = navigator.userAgent, ios = /iPhone|iPad|iPod/i.test(ua), android = /Android/i.test(ua);
+        if (!ios && !android) { e.preventDefault(); toast("티맵은 휴대폰에서 앱으로 열립니다 — 네이버지도나 카카오맵을 이용해 주세요"); return; }
+        const store = ios ? "https://apps.apple.com/kr/app/id431589174" : "https://play.google.com/store/apps/details?id=com.skt.tmap.ku";
+        setTimeout(() => { if (document.visibilityState === "visible") location.href = store; }, 1500);
+      });
+    });
     $$("[data-tel]").forEach((el) => {
       const tel = get(el.dataset.tel);
       if (tel) { el.href = `tel:${tel}`; el.setAttribute("aria-label", `${el.textContent.trim()}에게 전화`); }
@@ -173,7 +183,7 @@
     // 직접 그린 약도가 있으면 그것을 최우선으로
     if (v.mapImage) {
       const img = new Image(); img.src = v.mapImage; img.alt = "약도"; img.loading = "lazy";
-      img.onload = () => { el.innerHTML = ""; el.append(img); };
+      img.onload = () => { el.innerHTML = ""; el.classList.add("has-image"); el.append(img); };
       return;
     }
     const load = (src) => new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.append(s); });

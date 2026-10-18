@@ -32,12 +32,11 @@ python -m http.server 8000
 
 ## 실물 청첩장 반영 상태
 
-실물 청첩장(`assets/source/실물 앞면_달리는 신랑신부.jpg`, `실물 뒷면_꽃덩굴.jpg`)의 그림은 반영 완료. **약도**만 남았다.
+실물 청첩장 그림(`assets/source/실물 앞면_달리는 신랑신부.jpg`, `실물 뒷면_꽃덩굴.jpg`)과 예식장 약도까지 모두 반영 완료.
 
-### 1) 약도 (아직)
-1. 약도 파일을 `assets/illust/map.png` (또는 .webp/.jpg) 로 저장 — 4:3 비율이 지도 칸에 가장 잘 맞음. 흰 배경이면 `python tools/cut-illust.py <원본> map 1200` 으로 투명화 가능
-2. `js/config.js` → `venue.mapImage: "assets/illust/map.png"`
-3. 끝. (`index.html` 의 "약도 준비 중" 플레이스홀더는 자동으로 교체됨)
+### 1) 약도 (반영 완료)
+예식장 제공 약도(`assets/source/엘블레스 약도(예식장 제공).jpg`)에서 아래 회색 안내 블록을 잘라 `assets/illust/map.webp` 로 저장, `config.js` `venue.mapImage` 에 연결.
+다른 약도로 바꾸려면 파일만 교체하면 된다(세로/가로 비율 무관 — 그림 비율대로 표시됨).
 
 ### 2) 실물 그림 (반영 완료)
 
