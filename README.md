@@ -38,24 +38,29 @@ python -m http.server 8000
 예식장 제공 약도(`assets/source/엘블레스 약도(예식장 제공).jpg`)에서 아래 회색 안내 블록을 잘라 `assets/illust/map.webp` 로 저장, `config.js` `venue.mapImage` 에 연결.
 다른 약도로 바꾸려면 파일만 교체하면 된다(세로/가로 비율 무관 — 그림 비율대로 표시됨).
 
-### 2) 실물 그림 (반영 완료)
+### 2) 실물 그림 (반영 완료, 2026-10-18 컬러판으로 교체)
 
 | 그림 | 파일 | 쓰이는 곳 |
 |---|---|---|
-| 달리는 신랑신부 (실물 앞면, 흑백 선화 + 반짝이) | `assets/illust/running.{png,webp}`, `running@800.*` | 히어로 (`index.html` `.hero__art`) |
+| 달리는 신랑신부 (컬러, 반짝이·봉투) | `assets/illust/running.{png,webp}`, `running@800.*` | 히어로 (`.hero__art`) |
+| 수레 신랑신부 (컬러) | `assets/illust/wheelbarrow.*`, `wheelbarrow@800.*` | 사진 편지함 (`.letterbox__art`) |
 | 꽃 덩굴 (실물 뒷면 세로 장식) | `assets/illust/vine.*` | 초대글 오른쪽 (`.greeting__vine`) |
-| 앞면 전체 (손글씨 이름 + 그림) | `assets/illust/og.jpg` | 카카오톡 미리보기 |
+| 손글씨 "Soowan & Sojeong" | `assets/illust/names.*` | OG 이미지 재료 (페이지에는 아직 안 씀) |
+| 손글씨 + 컬러 그림 (크림 종이색 바탕) | `assets/illust/og.jpg` | 카카오톡 미리보기 |
 
-GPT 그림 그대로인 것: 수레 신랑신부(`wheelbarrow.*`, 사진 편지함), 인사하는 신랑신부(`bow.*`, 푸터), 봉투(`envelope.*`, 인트로), 우편가방(`mailbag@300.*`, 업로드 버튼).
+아직 예전 GPT 그림인 것(화풍이 다름): 인사하는 신랑신부(`bow.*`, 푸터), 봉투(`envelope.*`, 인트로), 우편가방(`mailbag@300.*`), 리본(`ribbon.*`), 섹션 아이콘(`ico-*`).
+→ **`docs/그림-생성-프롬프트.md`** 에 ChatGPT 로 다시 만들 프롬프트가 그림별로 정리되어 있다.
 
 다시 만들기 (원본은 크림색 종이 질감이라 `cut-paper.py` 사용):
 ```
-python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부.jpg" running     1400 --box 500,600,3000,2150 --drop-above 840 --min-area 250
-python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부.jpg" running@800  800 --box 500,600,3000,2150 --drop-above 840 --min-area 250
-python tools/cut-paper.py "assets/source/실물 뒷면_꽃덩굴.jpg"          vine        1200 --box 1560,0,1980,2480 --min-area 250 --pad 12
+python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부(컬러).jpg" running     1400 --box 500,800,3000,2150 --min-area 250
+python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부(컬러).jpg" running@800  800 --box 500,800,3000,2150 --min-area 250
+python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow 1400 --box 700,800,2600,2150 --min-area 250
+python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow@800 800 --box 700,800,2600,2150 --min-area 250
+python tools/cut-paper.py "assets/source/실물 뒷면_꽃덩굴.jpg"                vine        1200 --box 1560,0,1980,2480 --min-area 250 --pad 12
+python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부.jpg"       names       2000 --box 900,200,2800,1030 --drop-below 840 --min-area 250
 ```
-`--drop-above 840` 은 그림 위의 손글씨 "Soowan & Sojeong" 을 떼어내는 옵션(이름은 HTML 에서 폰트로 찍음).
-OG 는 같은 스크립트로 `--box 500,200,3000,2150` (손글씨 포함) 으로 뽑아 1200×630 흰 배경 가운데에 올린 것.
+`--drop-above / --drop-below` 는 손글씨와 그림을 분리하는 옵션. OG 는 `names` + `running` 을 1200×630 크림 바탕(#F1E9DB)에 올린 것.
 OG 를 바꾸면 developers.kakao.com/tool/clear/og 에서 캐시 삭제.
 
 ### 3) 실물에서 가져온 문구·폰트 (이미 반영됨)
@@ -78,4 +83,22 @@ Drive 무료 용량은 15GB(Gmail 과 공유) — 동영상을 많이 받으려�
 
 ## 테마
 
-화이트로 확정 (`<html data-theme="white">`). 비교가 필요하면 `?theme=cream` 으로 열어본다.
+크림(실물 종이색 #F1E9DB + 종이 질감) / 화이트 두 가지. 기본은 **크림**, 푸터의 토글(검토용)로 바꿀 수 있고 선택은 기기에 저장된다.
+`?theme=white` 로 열어도 된다. 확정되면 `index.html` 의 `themeSwitch` 블록과 `main.js` 의 토글 코드를 지우고 `<html data-theme="…">` 만 남긴다.
+
+## 참석 의사 (RSVP)
+
+이름 + 참석 여부만 받는다. 사진 편지함과 같은 Apps Script 웹앱으로 보내며(`action: "rsvp"`), 서버가 구글 시트 "수완♥소정 참석 의사 (RSVP)" 에 한 줄씩 기록한다 (시트는 첫 요청 때 Drive 폴더에 자동 생성).
+- 접수 기간: 예식 당일까지 (`Code.gs` `RSVP_UNTIL`). 사진 편지함 기간 제한과는 별개.
+- **Code.gs 를 바꿨으므로 Apps Script 를 "새 버전" 으로 다시 배포해야 동작한다.** 스프레드시트 권한이 추가되어 권한 검토가 한 번 더 뜬다.
+- 시트 주소는 편집기에서 `showRsvpSheet()` 실행 → 로그.
+- 보낸 사람 기기에는 localStorage 로 기록이 남아 "다시 전달하기" 로 바꿀 수 있다 (시트에는 새 줄로 추가됨 — 같은 이름의 마지막 줄이 최신).
+
+## 캘린더에 추가
+
+- Google 캘린더: `config.js` 의 `date` / `venue` 로 링크를 자동 생성.
+- iPhone: `assets/wedding.ics` 정적 파일 (Safari 에서 열면 "캘린더에 추가"). 날짜·장소가 바뀌면 이 파일도 손으로 고친다 (UTC 기준: 12:30 KST = 03:30Z).
+
+## 연락하기
+
+신랑·신부 + 양가 부모님 번호가 그대로 표시된다 (`config.js` 의 `tel`, `fatherTel`, `motherTel`). 번호를 누르면 복사, ☎ 를 누르면 전화.

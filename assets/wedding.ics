@@ -1,0 +1,21 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//soowan-sojeong-270221//wedding//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:soowan-sojeong-270221@rafael-lee-sw.github.io
+DTSTAMP:20261018T000000Z
+DTSTART:20270221T033000Z
+DTEND:20270221T050000Z
+SUMMARY:이수완 ♥ 이소정 결혼식
+LOCATION:엘블레스 다이아몬드홀 (서울 서초구 강남대로 213\, 스포타임 지하 1층)
+DESCRIPTION:모바일 청첩장 https://rafael-lee-sw.github.io/soowan-sojeong-270221/
+URL:https://rafael-lee-sw.github.io/soowan-sojeong-270221/
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:내일은 수완 ♥ 소정 결혼식
+END:VALARM
+END:VEVENT
+END:VCALENDAR

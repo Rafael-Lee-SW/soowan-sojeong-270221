@@ -29,8 +29,11 @@ window.WEDDING = {
 
   // 사람
   // relation: 같은 성별 형제 중 순서 (장남/차남…, 장녀/차녀…). first: 부모 란 뒤에 붙는 이름(성 제외)
-  groom: { name: "이수완", first: "수완", en: "Soowan", father: "이상군", mother: "김옥경", relation: "차남", tel: "010-2770-1457" },
-  bride: { name: "이소정", first: "소정", en: "Sojeong", father: "이명호", mother: "김지영", relation: "장녀", tel: "010-5686-6551" },
+  // tel: 본인, fatherTel/motherTel: 부모님 — "연락하기" 패널에 번호가 그대로 보이고, 번호를 누르면 복사, ☎ 를 누르면 전화
+  groom: { name: "이수완", first: "수완", en: "Soowan", father: "이상군", mother: "김옥경", relation: "차남",
+           tel: "010-2770-1457", fatherTel: "010-8589-7307", motherTel: "010-3022-1457" },
+  bride: { name: "이소정", first: "소정", en: "Sojeong", father: "이명호", mother: "김지영", relation: "장녀",
+           tel: "010-5686-6551", fatherTel: "010-2351-9551", motherTel: "010-7574-6551" },
 
   // 인사말 (줄바꿈은 \n)
   greeting: {
@@ -49,14 +52,17 @@ window.WEDDING = {
   // 마음 전하실 곳 — 비워두면 "준비 중"으로 표시
   accounts: {
     groom: [
-      // { holder: "이수완", bank: "국민은행", number: "000000-00-000000" },
+      { holder: "이수완", bank: "신한은행", number: "110-456-774554" },
     ],
     bride: [
       // { holder: "이소정", bank: "신한은행", number: "000-000-000000" },
     ],
   },
 
-  // 사진 편지함 (Google Apps Script 웹앱)
+  // 캘린더에 추가: Google 캘린더 링크는 date/venue 로 자동 생성, iPhone 은 아래 .ics 파일 (내용 바뀌면 파일도 다시 만들 것)
+  icsFile: "assets/wedding.ics",
+
+  // 사진 편지함 + 참석 의사(RSVP) — 둘 다 같은 Google Apps Script 웹앱으로 보낸다 (RSVP 는 action:"rsvp", 구글 시트에 기록)
   uploadUrl: "https://script.google.com/macros/s/AKfycbxEIzpf7fm-oBocNZ5F_zg2Tb9kV0nwBj11Gl_tjG9YjpeG9o-9bDJOKEZ-jWMvpxc/exec",
   uploadToken: "ss-270221-letter",   // Code.gs 의 TOKEN 과 동일해야 함 (단순 봇 차단용)
   // 원본 그대로 전송 (리사이즈 없음). 아래 한도는 안내용이고 실제 한도는 Code.gs 가 강제함 — 두 곳을 같이 맞출 것

@@ -61,9 +61,79 @@
     });
   });
 
-  /* ── 테마: 화이트 고정 (?theme=cream 으로 비교만 가능) ── */
+  /* ── 테마 (검토용): 크림 = 실물 종이색 기본. ?theme=white 또는 푸터 토글, 선택은 기기에 저장 ── */
   const qs = new URLSearchParams(location.search);
-  if (qs.get("theme")) document.documentElement.dataset.theme = qs.get("theme");
+  const applyTheme = (t) => {
+    document.documentElement.dataset.theme = t;
+    $$("#themeSwitch button").forEach((b) => b.classList.toggle("is-active", b.dataset.theme === t));
+    try { localStorage.setItem("theme", t); } catch {}
+  };
+  let savedTheme = null; try { savedTheme = localStorage.getItem("theme"); } catch {}
+  applyTheme(["cream", "white"].includes(qs.get("theme")) ? qs.get("theme") : (savedTheme || "cream"));
+  $$("#themeSwitch button").forEach((b) => b.addEventListener("click", () => applyTheme(b.dataset.theme)));
+
+  /* ── 연락하기: 신랑·신부 + 부모님 번호 (번호 = 복사, ☎ = 전화) ── */
+  safe("contacts", () => {
+    const esc = (v) => String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    $$("#contactPanel [data-side]").forEach((col) => {
+      const side = col.dataset.side, p = W[side];
+      const rows = [[side === "groom" ? "신랑" : "신부", p.name, p.tel], ["아버지", p.father, p.fatherTel], ["어머니", p.mother, p.motherTel]].filter((r) => r[1] && r[2]);
+      col.innerHTML = `<p class="contact__who">${side === "groom" ? "신랑측" : "신부측"}</p><div class="contact__list">${rows.map(([role, name, tel]) => `
+        <div class="contact__row">
+          <span class="contact__name"><span class="contact__role">${role}</span>${esc(name)}</span>
+          <button class="contact__num" type="button" data-copy-text="${esc(tel)}" aria-label="${esc(name)} 전화번호 복사">${esc(tel)}</button>
+          <a class="contact__call" href="tel:${esc(tel)}" aria-label="${esc(name)}에게 전화">☎</a>
+        </div>`).join("")}</div>`;
+    });
+    $("#contactPanel").addEventListener("click", (e) => { const b = e.target.closest("[data-copy-text]"); if (b) copy(b.dataset.copyText); });
+  });
+
+  /* ── 캘린더에 추가: Google 은 링크, iPhone 은 .ics 파일(config.icsFile) ── */
+  safe("calendarAdd", () => {
+    const start = new Date(W.date), end = new Date(start.getTime() + 90 * 60000);
+    const z = (d) => d.toISOString().replace(/[-:]|\.\d{3}/g, "");
+    const g = new URL("https://calendar.google.com/calendar/render");
+    g.searchParams.set("action", "TEMPLATE");
+    g.searchParams.set("text", `${W.groom.name} ♥ ${W.bride.name} 결혼식`);
+    g.searchParams.set("dates", `${z(start)}/${z(end)}`);
+    g.searchParams.set("ctz", "Asia/Seoul");
+    g.searchParams.set("location", `${W.venue.name} ${W.venue.hall} (${W.venue.address})`);
+    g.searchParams.set("details", `모바일 청첩장 ${location.origin}${location.pathname}`);
+    $("#calGoogle").href = g.href;
+  });
+
+  /* ── 참석 의사 (RSVP): 이름 + 참석 여부만. Apps Script 가 구글 시트에 기록 ── */
+  safe("rsvp", () => {
+    const form = $("#rsvpForm"), nameEl = $("#rsvpName"), btn = $("#rsvpSubmit"), status = $("#rsvpStatus");
+    const KEY = "rsvp-270221", label = (a) => (a === "yes" ? "참석" : "불참");
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(KEY) || "null"); } catch {}
+    if (saved && saved.name) {
+      nameEl.value = saved.name;
+      const r = $(`input[name="attend"][value="${saved.attend}"]`, form); if (r) r.checked = true;
+      status.textContent = `${saved.name}님의 ${label(saved.attend)} 의사가 전달되어 있습니다. 바뀌면 다시 보내 주세요.`;
+      btn.textContent = "다시 전달하기";
+    }
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = nameEl.value.trim(), attend = ($('input[name="attend"]:checked', form) || {}).value;
+      if (!name) { toast("성함을 입력해 주세요"); nameEl.focus(); return; }
+      if (!attend) { toast("참석 여부를 선택해 주세요"); return; }
+      if (!W.uploadUrl) { toast("아직 전달 주소가 설정되지 않았습니다"); return; }
+      btn.disabled = true; status.textContent = "전달하는 중…";
+      try {
+        const res = await fetch(W.uploadUrl, { method: "POST", body: JSON.stringify({ action: "rsvp", token: W.uploadToken, origin: location.origin, name, attend }) });
+        const json = await res.json();
+        if (!json.ok) throw Object.assign(new Error(json.error || "error"), { code: json.error });
+        try { localStorage.setItem(KEY, JSON.stringify({ name, attend })); } catch {}
+        status.textContent = attend === "yes" ? `${name}님, 전달되었습니다. 그날 뵙겠습니다 ♥` : `${name}님, 전달되었습니다. 마음만으로도 고맙습니다 ♥`;
+        btn.textContent = "다시 전달하기";
+      } catch (err) {
+        console.error(err);
+        status.textContent = err.code === "closed" ? "참석 의사 접수가 마감되었습니다" : "전달에 실패했습니다. 잠시 후 다시 시도해 주세요";
+      }
+      btn.disabled = false;
+    });
+  });
 
   /* ── 봉투 인트로 ── */
   safe("envelope", () => {

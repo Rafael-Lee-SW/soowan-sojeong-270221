@@ -7,6 +7,7 @@
 옵션
   --box L,T,R,B        원본 픽셀 기준으로 먼저 잘라낼 영역
   --drop-above Y       윗변이 Y(원본 px)보다 위에 있는 덩어리는 버림 (손글씨 제거용)
+  --drop-below Y       윗변이 Y(원본 px)보다 아래에 있는 덩어리는 버림 (손글씨만 남길 때)
   --min-area N         N px 미만 덩어리는 종이 얼룩으로 보고 버림 (기본 400)
   --pad N              여백 px (기본 24, 리사이즈 전 기준)
 
@@ -52,12 +53,14 @@ lab, n = ndimage.label(alpha > 0.35)
 keep = np.zeros(n + 1, bool)
 min_area = int(opt.get("min-area", 400))
 drop_above = int(opt["drop-above"]) - oy if "drop-above" in opt else None
+drop_below = int(opt["drop-below"]) - oy if "drop-below" in opt else None
 objs = ndimage.find_objects(lab)
 areas = ndimage.sum(np.ones_like(lab), lab, index=np.arange(n + 1))
 for k, sl in enumerate(objs, start=1):
     if sl is None: continue
     if areas[k] < min_area: continue
     if drop_above is not None and sl[0].start < drop_above: continue
+    if drop_below is not None and sl[0].start > drop_below: continue
     keep[k] = True
 mask = keep[lab]
 mask = ndimage.binary_dilation(mask, iterations=3)   # 램프 가장자리까지 살림

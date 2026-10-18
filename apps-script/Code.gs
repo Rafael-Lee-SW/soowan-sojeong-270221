@@ -16,6 +16,7 @@
  *     (범위가 늘어났으므로 기존 배포를 수정할 때도 "권한 검토" 가 한 번 더 뜬다 — 정상)
  *  4. 생성된 "웹 앱 URL" 을 js/config.js 의 uploadUrl 에 붙여넣는다.
  *  5. 코드를 수정하면 반드시 "배포 → 배포 관리 → 연필 → 버전: 새 버전 → 배포" 해야 반영된다. (URL 은 그대로)
+ *     ※ RSVP 추가(2026-10)로 스프레드시트 권한이 늘었다 — 새 버전 배포 시 "권한 검토" 가 한 번 더 뜨면 승인.
  *
  * 운영 스위치 — 재배포 없이, 편집기 상단에서 함수를 고르고 ▶ 실행:
  *  - enableTestMode() / disableTestMode() : 기간 제한 무시 (테스트할 때만. 끝나면 반드시 disable)
@@ -34,6 +35,12 @@
  */
 
 const FOLDER_ID = "여기에_폴더_ID";
+
+// 참석 의사(RSVP) — 같은 웹앱으로 받아 구글 시트에 기록. 시트는 처음 요청 때 FOLDER_ID 폴더에 자동 생성된다.
+// (편집기에서 showRsvpSheet() 를 실행하면 시트 주소가 로그에 나온다)
+const RSVP_SHEET_NAME = "수완♥소정 참석 의사 (RSVP)";
+const RSVP_UNTIL = new Date("2027-02-21T23:59:59+09:00");   // 예식 당일까지 받는다 (업로드 기간과 무관)
+const RSVP_DAILY = 500;                                     // 하루 접수 건수 상한 (봇 방지)
 const TOKEN = "ss-270221-letter";
 const ORIGINS = ["https://rafael-lee-sw.github.io", "http://localhost:8765"];
 
@@ -54,11 +61,14 @@ function doPost(e) {
     if (props.getProperty("closed")) return json({ ok: false, error: "closed" });
 
     const now = new Date();
-    if (!props.getProperty("test_mode") && (now < OPEN_FROM || now > OPEN_TO)) return json({ ok: false, error: "closed" });
-
     const body = JSON.parse(e.postData.contents || "{}") || {};
     if (body.token !== TOKEN) return json({ ok: false, error: "forbidden" });
     if (ORIGINS.indexOf(body.origin) < 0) return json({ ok: false, error: "forbidden" });
+
+    // 참석 의사(RSVP) — 업로드 기간 제한을 타지 않고 예식 당일까지 받는다
+    if (body.action === "rsvp") return rsvp(body, now, props, lock);
+
+    if (!props.getProperty("test_mode") && (now < OPEN_FROM || now > OPEN_TO)) return json({ ok: false, error: "closed" });
 
     const size = Number(body.size), type = String(body.type || "");
     const isImage = /^image\//.test(type), isVideo = /^video\//.test(type);
@@ -115,15 +125,53 @@ function doPost(e) {
   }
 }
 
+// ── 참석 의사(RSVP): [시간, 이름, 참석 여부] 한 줄 추가 ──
+function rsvp(body, now, props, lock) {
+  if (now > RSVP_UNTIL) return json({ ok: false, error: "closed" });
+  const name = String(body.name || "").replace(/[\u0000-\u001F]/g, "").trim().slice(0, 20);
+  const attend = body.attend === "yes" ? "참석" : body.attend === "no" ? "불참" : "";
+  if (!name || !attend) return json({ ok: false, error: "invalid" });
+  lock.waitLock(10000);
+  try {
+    const dayKey = "rsvp_" + Utilities.formatDate(now, "Asia/Seoul", "yyyyMMdd");
+    const day = Number(props.getProperty(dayKey) || 0);
+    if (day >= RSVP_DAILY) return json({ ok: false, error: "limit" });
+    props.setProperty(dayKey, String(day + 1));
+    rsvpSheet(props).appendRow([Utilities.formatDate(now, "Asia/Seoul", "yyyy-MM-dd HH:mm:ss"), name, attend]);
+  } finally { lock.releaseLock(); }
+  return json({ ok: true });
+}
+
+// 시트 찾기/만들기 — ID 는 스크립트 속성 rsvp_sheet_id 에 보관
+function rsvpSheet(props) {
+  let id = props.getProperty("rsvp_sheet_id"), ss = null;
+  if (id) { try { ss = SpreadsheetApp.openById(id); } catch (_) { ss = null; } }
+  if (!ss) {
+    ss = SpreadsheetApp.create(RSVP_SHEET_NAME);
+    try { DriveApp.getFileById(ss.getId()).moveTo(DriveApp.getFolderById(FOLDER_ID)); } catch (_) {}
+    const sh = ss.getSheets()[0];
+    sh.setName("RSVP"); sh.appendRow(["시간", "이름", "참석 여부"]); sh.setFrozenRows(1); sh.setColumnWidths(1, 3, 160);
+    props.setProperty("rsvp_sheet_id", ss.getId());
+  }
+  return ss.getSheets()[0];
+}
+
+// 편집기에서 ▶ 실행: RSVP 시트 주소를 로그에 출력 (없으면 만든다)
+function showRsvpSheet() {
+  const sh = rsvpSheet(PropertiesService.getScriptProperties());
+  console.log(sh.getParent().getUrl() + "  (현재 " + Math.max(0, sh.getLastRow() - 1) + "건)");
+}
+
 // 브라우저에서 URL 을 직접 열었을 때 살아있는지 확인용
 function doGet() {
-  return json({ ok: true, service: "photo-letterbox", mode: "resumable" });
+  return json({ ok: true, service: "photo-letterbox + rsvp", mode: "resumable" });
 }
 
 // 권한 범위 선언용 — 실행되지 않지만, Apps Script 가 코드를 읽고 Drive "쓰기" 권한까지 요청하게 만든다.
 // (getFolderById 만 있으면 읽기 전용으로 감지되어 업로드 세션이 403 으로 거부될 수 있음)
 function _declareScopes() {
   DriveApp.getFolderById(FOLDER_ID).createFile("scope", "scope");
+  SpreadsheetApp.create("scope");
   UrlFetchApp.fetch("https://www.googleapis.com/");
   MailApp.sendEmail("", "", "");
 }
