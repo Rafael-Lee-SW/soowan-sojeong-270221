@@ -60,7 +60,7 @@ python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"       
 python tools/cut-paper.py "assets/source/실물 뒷면_꽃덩굴.jpg"                vine        1200 --box 1560,0,1980,2480 --min-area 250 --pad 12
 python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부.jpg"       names       2000 --box 900,200,2800,1030 --drop-below 840 --min-area 250
 ```
-`--drop-above / --drop-below` 는 손글씨와 그림을 분리하는 옵션. OG 는 `names` + `running` 을 1200×630 크림 바탕(#F1E9DB)에 올린 것.
+`--drop-above / --drop-below` 는 손글씨와 그림을 분리하는 옵션. OG 는 `names` + `running` 을 1200×630 흰 바탕에 올린 것.
 OG 를 바꾸면 developers.kakao.com/tool/clear/og 에서 캐시 삭제.
 
 ### 3) 실물에서 가져온 문구·폰트 (이미 반영됨)
@@ -83,8 +83,8 @@ Drive 무료 용량은 15GB(Gmail 과 공유) — 동영상을 많이 받으려�
 
 ## 테마
 
-크림(실물 종이색 #F1E9DB + 종이 질감) / 화이트 두 가지. 기본은 **크림**, 푸터의 토글(검토용)로 바꿀 수 있고 선택은 기기에 저장된다.
-`?theme=white` 로 열어도 된다. 확정되면 `index.html` 의 `themeSwitch` 블록과 `main.js` 의 토글 코드를 지우고 `<html data-theme="…">` 만 남긴다.
+**화이트로 확정** (`<html data-theme="white">`, 2026-10-18). 비교가 필요하면 `?theme=cream` 으로 열어본다.
+크림 토큰은 `css/style.css` 에 남겨 두었다.
 
 ## 참석 의사 (RSVP)
 

@@ -432,10 +432,6 @@ small { font-weight: 300; }
 .footer__names { margin: 0; font-size: 16px; letter-spacing: .1em; font-weight: 400; }
 .footer__thanks { margin: 6px 0 32px; font-size: 13.5px; color: var(--ink-soft); }
 .footer__share { display: flex; justify-content: center; gap: 8px; }
-/* 검토용 테마 전환 */
-.themeSwitch { margin-top: 40px; display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; font-size: 11px; }
-.themeSwitch button { padding: 5px 12px; color: var(--ink-soft); }
-.themeSwitch button.is-active { background: var(--ink); color: var(--bg); }
 
 
 /* ─────────────────────────────────────────────

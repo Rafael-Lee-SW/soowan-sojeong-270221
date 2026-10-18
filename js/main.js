@@ -61,16 +61,10 @@
     });
   });
 
-  /* ── 테마 (검토용): 크림 = 실물 종이색 기본. ?theme=white 또는 푸터 토글, 선택은 기기에 저장 ── */
+  /* ── 테마: 화이트 확정 (?theme=cream 으로 비교만 가능). 검토 때 기기에 저장된 선택은 지운다 ── */
   const qs = new URLSearchParams(location.search);
-  const applyTheme = (t) => {
-    document.documentElement.dataset.theme = t;
-    $$("#themeSwitch button").forEach((b) => b.classList.toggle("is-active", b.dataset.theme === t));
-    try { localStorage.setItem("theme", t); } catch {}
-  };
-  let savedTheme = null; try { savedTheme = localStorage.getItem("theme"); } catch {}
-  applyTheme(["cream", "white"].includes(qs.get("theme")) ? qs.get("theme") : (savedTheme || "cream"));
-  $$("#themeSwitch button").forEach((b) => b.addEventListener("click", () => applyTheme(b.dataset.theme)));
+  try { localStorage.removeItem("theme"); } catch {}
+  if (qs.get("theme") === "cream") document.documentElement.dataset.theme = "cream";
 
   /* ── 연락하기: 신랑·신부 + 부모님 번호 (번호 = 복사, ☎ = 전화) ── */
   safe("contacts", () => {
