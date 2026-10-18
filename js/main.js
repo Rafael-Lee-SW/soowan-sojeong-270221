@@ -252,8 +252,11 @@
     const el = $("#map"), v = W.venue;
     // 직접 그린 약도가 있으면 그것을 최우선으로
     if (v.mapImage) {
-      const img = new Image(); img.src = v.mapImage; img.alt = "약도"; img.loading = "lazy";
+      // loading="lazy" 를 주면 안 된다: 아직 화면에 넣지 않은 이미지는 사파리 등이 로드를 시작하지 않아 "준비 중" 이 그대로 남는다
+      const img = new Image(); img.alt = "약도"; img.decoding = "async";
       img.onload = () => { el.innerHTML = ""; el.classList.add("has-image"); el.append(img); };
+      img.onerror = () => console.error("[map] 약도 이미지를 불러오지 못했습니다:", v.mapImage);
+      img.src = v.mapImage;
       return;
     }
     const load = (src) => new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.append(s); });
