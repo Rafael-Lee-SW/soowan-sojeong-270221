@@ -15,14 +15,18 @@ assets/photos/      갤러리 사진 (웹용 리사이즈본, 자동 생성)
 originals/          DSLR 원본 넣는 곳 (git 제외)
 apps-script/Code.gs 사진 편지함 서버 (Google Apps Script 에 붙여넣기)
 tools/resize-photos.py  originals → assets/photos + photos.js
+tools/serve.py      로컬 미리보기 (자동 새로고침)
+tools/ribbon-path.py  푸터 리본 글씨 곡선을 리본 그림에서 측정해 index.html 에 써 넣음
 ```
 
 ## 로컬에서 보기
 
 ```
-python -m http.server 8000
+python tools/serve.py
 ```
-→ http://localhost:8000  (file:// 로 열면 fetch/폰트가 막힐 수 있음)
+→ http://localhost:8000 (같은 와이파이의 휴대폰은 실행 시 출력되는 `http://192.168.x.x:8000`)
+캐시를 끄고, html/css/js/그림을 저장하면 열린 페이지가 자동 새로고침된다 — 배포 전에 여기서 확인하고 push.
+(file:// 로 열면 fetch/폰트가 막힐 수 있음)
 
 ## 사진 넣기
 
@@ -46,22 +50,28 @@ python -m http.server 8000
 | 수레 신랑신부 (컬러) | `assets/illust/wheelbarrow.*`, `wheelbarrow@800.*` | 사진 편지함 (`.letterbox__art`) |
 | 꽃 덩굴 (실물 뒷면 세로 장식) | `assets/illust/vine.*` | 초대글 오른쪽 (`.greeting__vine`) |
 | 손글씨 "Soowan & Sojeong" | `assets/illust/names.*` | OG 이미지 재료 (페이지에는 아직 안 씀) |
-| 손글씨 + 컬러 그림 (크림 종이색 바탕) | `assets/illust/og.jpg` | 카카오톡 미리보기 |
+| 손글씨 + 컬러 그림 (흰 바탕) | `assets/illust/og.jpg` (`tools/make-og.py`) | 카카오톡 미리보기 |
 
-아직 예전 GPT 그림인 것(화풍이 다름): 인사하는 신랑신부(`bow.*`, 푸터), 봉투(`envelope.*`, 인트로), 우편가방(`mailbag@300.*`), 리본(`ribbon.*`), 섹션 아이콘(`ico-*`).
+인사하는 신랑신부(`bow.*`, 푸터)는 2026-10-19 새 화풍으로 교체 (`assets/source/수줍게 함께 인사하는 신랑신부.png` → `cut-paper.py`).
+아직 예전 GPT 그림인 것(화풍이 다름): 봉투(`envelope.*`, 인트로), 우편가방(`mailbag@300.*`), 리본(`ribbon.*`), 섹션 아이콘(`ico-*`).
 → **`docs/그림-생성-프롬프트.md`** 에 ChatGPT 로 다시 만들 프롬프트가 그림별로 정리되어 있다.
 
 다시 만들기 (원본은 크림색 종이 질감이라 `cut-paper.py` 사용):
 ```
-python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부(컬러).jpg" running     1400 --box 500,800,3000,2150 --min-area 250
-python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부(컬러).jpg" running@800  800 --box 500,800,3000,2150 --min-area 250
-python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow 1400 --box 700,800,2600,2150 --min-area 250 --sheer 1480,860,2010,1310
-python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow@800 800 --box 700,800,2600,2150 --min-area 250 --sheer 1480,860,2010,1310
-python tools/cut-paper.py "assets/source/실물 뒷면_꽃덩굴.jpg"                vine        1200 --box 1560,0,1980,2480 --min-area 250 --pad 12
-python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부.jpg"       names       2000 --box 900,200,2800,1030 --drop-below 840 --min-area 250
+python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부(컬러).jpg" running     1400 --box 500,800,3000,2150
+python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부(컬러).jpg" running@800  800 --box 500,800,3000,2150
+python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow 1400 --box 700,800,2600,2150
+python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow@800 800 --box 700,800,2600,2150
+python tools/cut-paper.py "assets/source/실물 뒷면_꽃덩굴.jpg"                vine        1200 --box 1560,0,1980,2480 --pad 12
+python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부.jpg"       names       2000 --box 900,200,2800,1030 --drop-below 840
+python tools/make-og.py
 ```
-`--drop-above / --drop-below` 는 손글씨와 그림을 분리하는 옵션. 종이색과 비슷한 연분홍 드레스·피부·베일이 빠지면 `--paper` 값을 낮춘다(기본 5.5). `--sheer` 는 수레 그림의 베일(원본에서 드레스와 같은 연분홍)을 흰 배경에서 베일로 읽히게 반투명 처리하는 영역.
-그림 파일 주소에는 `?v=` 가 붙어 있다 — 그림을 바꾸면 `index.html` 에서 이 값도 올려야 브라우저 캐시가 갱신된다. OG 는 `names` + `running` 을 1200×630 흰 바탕에 올린 것.
+`cut-paper.py` 는 "종이 나누기" 방식(2026-10-19): 실물 원본 4장은 같은 종이 질감 레이어를 쓰므로(섬유 티까지 픽셀 단위로 동일) 4장을 겹쳐 종이 지도를 복원하고, 원본 ÷ 종이 → 흰색을 투명으로 분리한다.
+그림/배경 경계를 판정하지 않으므로 베이지 덩어리·테두리 보풀이 생기지 않고, 선 안의 빈 종이(수레 다리 사이 등)는 투명해진다.
+연분홍 베일·드레스는 종이 위에서는 베이지와의 색 대비로 보이지만 흰 바탕에서는 거의 흰색이 되므로, 옅은 면만 `--boost`(기본 2.5배)로 진하게 한다 — 선·진한 색은 그대로. 1 이면 원본 그대로.
+**흰 바탕 전용** — 크림 테마나 어두운 바탕에 올리면 옅은 면이 비친다. 새 실물 원본을 넣을 때는 같은 크기(3508×2480)의 jpg 를 `assets/source/` 에 두면 종이 지도에 자동으로 합쳐진다.
+`--drop-above / --drop-below` 는 손글씨와 그림을 분리하는 옵션.
+그림 파일 주소에는 `?v=` 가 붙어 있다 — 그림을 바꾸면 `index.html` 에서 이 값도 올려야 배포 후 브라우저 캐시가 갱신된다 (`tools/serve.py` 미리보기는 캐시를 끄므로 상관없음).
 OG 를 바꾸면 developers.kakao.com/tool/clear/og 에서 캐시 삭제.
 
 ### 3) 실물에서 가져온 문구·폰트 (이미 반영됨)

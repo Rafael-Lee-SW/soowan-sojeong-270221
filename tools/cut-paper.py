@@ -8,21 +8,27 @@
   --box L,T,R,B        원본 픽셀 기준으로 먼저 잘라낼 영역
   --drop-above Y       윗변이 Y(원본 px)보다 위에 있는 덩어리는 버림 (손글씨 제거용)
   --drop-below Y       윗변이 Y(원본 px)보다 아래에 있는 덩어리는 버림 (손글씨만 남길 때)
-  --min-area N         N px 미만 덩어리는 종이 얼룩으로 보고 버림 (기본 400)
-  --paper T            "종이색" 판정 거리 (기본 5.5). 연분홍 드레스·피부가 빠지면 낮추고, 종이가 남으면 높인다
+  --min-area N         N px 미만 덩어리는 버림 (기본 0 — 종이 티는 2) 에서, 옅은 잔물결은 문턱에서 이미 사라진다)
+  --floor F            이보다 옅은 알파는 0 으로 (기본 0.006, 짝이 없는 그림은 배경 잡음의 1.5배). 종이 잔여가 보이면 올리고, 베일이 사라지면 내린다
+  --boost M            옅은 면(알파 0.2 미만)만 최대 M 배 진하게 (기본 2.5, 1 = 원본 그대로).
+                       종이 위에서는 베이지와의 색 대비로 보이던 연분홍 베일·드레스가 흰 바탕에서는 거의 흰색이 되므로 보정한다.
+                       선·진한 색은 그대로
   --pad N              여백 px (기본 24, 리사이즈 전 기준)
-  --sheer L,T,R,B[,A]  이 영역(원본 px) 안의 연한 색(종이와 비슷한 베일 등)을 알파 A(기본 0.3)로 반투명하게 — 흰 배경에서 베일이 종이 잔여물처럼 보일 때
 
-방식 (스티커 컷):
-  1) 종이 질감 노이즈를 흐려서 없앤 뒤, 가장자리 종이색(중앙값)과의 색 거리가 T 미만인 픽셀을 "종이 후보"로 본다
-  2) 종이 후보 중 그림 바깥 테두리와 이어진 덩어리만 배경으로 지운다
-     → 선 안쪽에 있는 연분홍 드레스·피부·베일·흰 셔츠처럼 종이와 색이 비슷한 영역은 그대로 남는다
-  3) 선 바깥에 남는 2~3px 종이색 띠(흐림 때문에 생김)는 테두리 띠에서만 걷어낸다
-  4) 가장자리 1px 는 알파로 부드럽게, 색은 알파로 되돌려(un-premultiply) 어느 배경에 올려도 테두리가 뜨지 않게 한다
+방식 (종이 나누기):
+  assets/source 의 실물 원본(3508×2480)들은 같은 종이 질감 레이어를 쓴다 — 섬유 티까지 픽셀 단위로 같다.
+  1) 같은 크기 원본을 모두 겹쳐, 픽셀마다 가장 밝은 값들(그 자리에 그림이 없는 장)로 "종이 지도"를 만든다
+  2) 원본 ÷ 종이 지도 → 종이는 정확히 흰색, 그림은 흰 종이에 그린 색이 되고 질감·섬유 티는 사라진다
+  3) 흰색을 투명으로 분리(color-to-alpha): 알파 = 흰색에서 가장 먼 채널의 거리, 색은 알파로 되돌린다
+  → 흰 바탕에 올리면 2)와 픽셀 단위로 같다. "어디까지가 그림인가"를 판정하지 않으므로
+    종이 덩어리·베이지 테두리·보풀이 생기지 않는다. 선 안쪽의 빈 종이(수레 다리 사이 등)는 투명,
+    종이와 비슷한 연분홍 드레스·베일·피부는 흰 종이 위의 연한 색으로 남는다.
+  흰 바탕(--bg #fff) 전용이다. 어두운 바탕에 올리면 옅은 면이 비친다.
+  같은 크기 원본이 없는 그림(ChatGPT 흰 배경 그림 등)은 가장자리 배경색 하나로 나눈다 — 같은 톤으로 맞추려면 새 그림도 이 도구로.
 """
 import sys
 from pathlib import Path
-from PIL import Image, ImageFilter
+from PIL import Image
 import numpy as np
 from scipy import ndimage
 
@@ -33,89 +39,89 @@ while i < len(args):
         opt[args[i][2:]] = args[i + 1]; i += 2
     else:
         pos.append(args[i]); i += 1
-src, name = pos[0], pos[1]
+src, name = Path(pos[0]), pos[1]
 maxw = int(pos[2]) if len(pos) > 2 else 1000
-dst = Path(__file__).resolve().parent.parent / "assets" / "illust"
+root = Path(__file__).resolve().parent.parent
+dst = root / "assets" / "illust"
 
 im = Image.open(src).convert("RGB")
 full = np.asarray(im).astype(np.float32)
+
+# 1) 종이 지도: 같은 크기 원본들 중 픽셀마다 가장 밝은 장들(밝기 차 6 이내)의 평균
+sources = [p for p in (root / "assets" / "source").glob("*.jpg") if Image.open(p).size == im.size]
+if src.resolve() not in [p.resolve() for p in sources]:
+    sources.append(src)
 edge = np.concatenate([full[:60].reshape(-1, 3), full[-60:].reshape(-1, 3), full[:, :60].reshape(-1, 3), full[:, -60:].reshape(-1, 3)])
-bg = np.median(edge, 0)
+P = np.median(edge, 0)
+if len(sources) >= 2:
+    stack = np.stack([np.asarray(Image.open(p).convert("RGB")).astype(np.float32) for p in sources])
+    lum = stack.mean(-1)
+    top = lum.max(0)
+    agree = lum >= top - 6
+    paper = (stack * agree[..., None]).sum(0) / agree.sum(0)[..., None]
+    # 모든 장에 그림이 있는 자리(가장 밝은 값도 섬유 티보다 어두움)는 평균 종이색으로
+    w = np.clip((top - 175) / 15, 0, 1)[..., None]
+    paper = w * paper + (1 - w) * P
+    del stack, lum, agree
+    noise_floor = 0.006                                     # 질감을 나눠 없앴으므로 JPEG 잡음만 남는다
+else:                                                       # 짝이 없는 그림(ChatGPT 흰 배경 등) — 가장자리 배경색 하나로 나눈다
+    paper = np.broadcast_to(P, full.shape)
+    # 배경 잡음은 나눠 없앨 수 없으니 문턱을 잡음 위로 (안 그러면 --boost 가 잡음까지 키워 그림 둘레에 띠가 생긴다)
+    edge_a = (np.maximum(P - edge, 0) / np.maximum(P, 1)).max(-1)
+    noise_floor = max(0.006, 1.5 * float(np.percentile(edge_a, 99.9)))
 
 ox = oy = 0
 if "box" in opt:
     L, T, R, B = map(int, opt["box"].split(","))
-    im = im.crop((L, T, R, B)); ox, oy = L, T
-rgb = np.asarray(im).astype(np.float32)
-h, w = rgb.shape[:2]
+    full, paper = full[T:B, L:R], paper[T:B, L:R]; ox, oy = L, T
+h, w_ = full.shape[:2]
 
-T_PAPER = float(opt.get("paper", 5.5))
-d_smooth = np.sqrt(((np.asarray(im.filter(ImageFilter.GaussianBlur(2.5))).astype(np.float32) - bg) ** 2).sum(-1))
-d_fine   = np.sqrt(((np.asarray(im.filter(ImageFilter.GaussianBlur(1.0))).astype(np.float32) - bg) ** 2).sum(-1))
+# 2) 종이 나누기 → 3) 흰색을 투명으로
+white = np.clip(full / np.maximum(paper, 1) * 255, 0, 255)
+alpha = ((255 - white) / 255).max(-1)
+FLOOR = float(opt.get("floor", noise_floor))
+alpha = alpha * np.clip((alpha - FLOOR) / FLOOR, 0, 1)      # FLOOR 아래는 0, 2×FLOOR 부터 그대로 (부드러운 문턱)
+# 진한 곳과 이어지지 않은 옅은 점(JPEG 잔물결)만 지운다 — 선에 붙은 베일 같은 옅은 면은 남는다
+lab, n = ndimage.label(alpha > 0, structure=np.ones((3, 3)))
+alpha = np.where((ndimage.maximum(alpha, lab, index=np.arange(n + 1)) >= 0.08)[lab], alpha, 0)
+# 주변 3px 안에 아무것도 없는 작은 점(남은 섬유 티)도 지운다 — 면 안쪽 질감은 큰 덩어리에 묶여 안전
+lab, n = ndimage.label(ndimage.binary_dilation(alpha > 0.03, iterations=3), structure=np.ones((3, 3)))
+dots = ndimage.sum(alpha > 0.03, lab, index=np.arange(n + 1)) < 12; dots[0] = False
+alpha = np.where(dots[lab], 0, alpha)
 
-# 1) 종이 후보 → 2) 테두리와 이어진 덩어리만 배경
-paper = d_smooth < T_PAPER
-lab, n = ndimage.label(paper)
-border_ids = np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))
-border_ids = border_ids[border_ids > 0]
-background = np.isin(lab, border_ids)
-fg = ~background
-
-# 3) 선 바깥 종이색 띠 제거: 전경 가장자리 4px 띠 안에서, 미세 거리로도 종이색이면 배경으로
-band = fg & ~ndimage.binary_erosion(fg, iterations=4)
-fg = fg & ~(band & (d_fine < T_PAPER + 1.5))
-fg = ndimage.binary_opening(fg, iterations=1) | ndimage.binary_erosion(fg, iterations=1)   # 1px 돌기 정리
-
-# 덩어리 필터: 작은 것(min-area) · 종이 섬유 얼룩(평균 색 거리가 낮은 것) 제거, 손글씨 분리
-lab, n = ndimage.label(fg)
-idx = np.arange(n + 1)
-areas = ndimage.sum(np.ones_like(lab), lab, index=idx)
-meand = ndimage.mean(d_fine, lab, index=idx)
-keep = np.zeros(n + 1, bool)
-min_area = int(opt.get("min-area", 400))
-PAPER_BLOB = 14.0                                            # 평균 거리가 이보다 낮은 덩어리 = 종이 얼룩 (드레스 ~11 은 선과 붙어 있어 평균이 훨씬 높다)
+# 덩어리 단위 정리 (손글씨 분리·작은 티)
+min_area = int(opt.get("min-area", 0))
 drop_above = int(opt["drop-above"]) - oy if "drop-above" in opt else None
 drop_below = int(opt["drop-below"]) - oy if "drop-below" in opt else None
-for k, sl in enumerate(ndimage.find_objects(lab), start=1):
-    if sl is None or areas[k] < min_area or meand[k] < PAPER_BLOB: continue
-    if drop_above is not None and sl[0].start < drop_above: continue
-    if drop_below is not None and sl[0].start > drop_below: continue
-    keep[k] = True
-fg = keep[lab]
+if min_area or drop_above is not None or drop_below is not None:
+    lab, n = ndimage.label(ndimage.binary_dilation(alpha > 0.04, iterations=2), structure=np.ones((3, 3)))
+    areas = ndimage.sum(alpha > 0.04, lab, index=np.arange(n + 1))
+    keep = np.zeros(n + 1, bool)
+    for k, sl in enumerate(ndimage.find_objects(lab), start=1):
+        if sl is None or areas[k] < min_area: continue
+        if drop_above is not None and sl[0].start < drop_above: continue
+        if drop_below is not None and sl[0].start > drop_below: continue
+        keep[k] = True
+    alpha = np.where(keep[lab], alpha, 0)
 
-# 4) 가장자리: 바깥 4px 띠는 색 거리로 알파를 매겨(종이와 선의 혼합 픽셀 → 반투명) 베이지 테두리를 없애고, 안쪽은 불투명
-band = fg & ~ndimage.binary_erosion(fg, iterations=4)
-alpha = fg.astype(np.float32)
-alpha[band] = np.clip((d_fine[band] - 5.0) / 30.0, 0.0, 1.0)
-alpha = np.where(fg, alpha, 0.0)
-alpha = ndimage.gaussian_filter(alpha, 0.6)
-alpha = np.where(fg, alpha, np.minimum(alpha, 0.5)).astype(np.float32)   # 바깥으로 번진 것은 약하게만
-alpha = np.clip(alpha, 0, 1).astype(np.float32)
-if "sheer" in opt:                                            # 베일 등 연한 영역만 반투명 (선·진한 색은 그대로)
-    v = [float(x) for x in opt["sheer"].split(",")]
-    L2, T2, R2, B2 = [int(x) for x in v[:4]]; A = v[4] if len(v) > 4 else 0.3
-    L2 -= ox; R2 -= ox; T2 -= oy; B2 -= oy
-    print("sheer region (crop px):", L2, T2, R2, B2)
-    region = np.zeros_like(fg); region[max(0, T2):max(0, B2), max(0, L2):max(0, R2)] = True
-    # 연한 색 덩어리(선으로 둘러싸인 영역) 단위로 고른다: 덩어리의 60% 이상이 상자 안에 있으면 통째로 반투명 → 상자 경계가 보이지 않음
-    plab, pn = ndimage.label(fg & (d_fine < 30))
-    pidx = np.arange(pn + 1)
-    inside = ndimage.sum(region, plab, index=pidx); total = ndimage.sum(np.ones_like(plab), plab, index=pidx)
-    pick = (inside >= 0.6 * np.maximum(total, 1)) & (total >= 50); pick[0] = False
-    pale = pick[plab]
-    print("sheer: pale regions picked", int(pick.sum()), "px", int(pale.sum()))
-    alpha = np.where(pale, np.minimum(alpha, A), alpha).astype(np.float32)
-else:
-    pale = np.zeros_like(fg)
-a3 = np.clip(alpha, 0.15, 1)[..., None]
-ink = (rgb - (1 - a3) * bg) / a3                              # orig = a*ink + (1-a)*bg
-ink = np.where(alpha[..., None] > 0, ink, rgb)
-ink = np.where(pale[..., None], rgb, ink)                     # 반투명 처리한 베일은 원래 색 그대로 (되돌리면 다시 진해짐)
-out = Image.fromarray(np.dstack([np.clip(ink, 0, 255), alpha * 255]).astype(np.uint8), "RGBA")
+a3 = np.maximum(alpha, 1e-4)[..., None]
+ink = np.clip((white - (1 - a3) * 255) / a3, 0, 255)        # white = a·ink + (1-a)·255
+BOOST = float(opt.get("boost", 2.5))
+if BOOST != 1:                                              # 옅은 면만 진하게: 알파 0 근처는 ×BOOST, 0.2 부터는 그대로 (단조 증가)
+    alpha = alpha * (1 + (BOOST - 1) * np.clip(1 - alpha / 0.2, 0, 1) ** 2)
+out = Image.fromarray(np.dstack([ink, alpha * 255]).round().astype(np.uint8), "RGBA")
 
 pad = int(opt.get("pad", 24))
-b = Image.fromarray((alpha > 0.3).astype(np.uint8) * 255).getbbox()
-out = out.crop((max(0, b[0] - pad), max(0, b[1] - pad), min(w, b[2] + pad), min(h, b[3] + pad)))
-out.thumbnail((maxw, maxw), Image.LANCZOS)
-out.save(dst / f"{name}.png", optimize=True); out.save(dst / f"{name}.webp", quality=92, method=6)
-print(name, out.size, f"bg={bg.astype(int).tolist()} paper<{T_PAPER} components kept {keep.sum()}/{n}")
+b = Image.fromarray((alpha > 0.1).astype(np.uint8) * 255).getbbox()
+out = out.crop((max(0, b[0] - pad), max(0, b[1] - pad), min(w_, b[2] + pad), min(h, b[3] + pad)))
+if out.width > maxw or out.height > maxw:                   # 알파를 곱한 상태로 줄여야 가장자리가 어두워지지 않는다
+    s = maxw / max(out.size)
+    out = out.convert("RGBa").resize((round(out.width * s), round(out.height * s)), Image.LANCZOS).convert("RGBA")
+    o = np.asarray(out).copy()                              # 축소 링잉으로 생긴 외딴 1~3px 점 정리
+    lab, n = ndimage.label(ndimage.binary_dilation(o[..., 3] > 8, iterations=2), structure=np.ones((3, 3)))
+    dots = ndimage.sum(o[..., 3] > 8, lab, index=np.arange(n + 1)) < 6; dots[0] = False
+    o[dots[lab], 3] = 0
+    out = Image.fromarray(o, "RGBA")
+out.save(dst / f"{name}.png", optimize=True)
+out.save(dst / f"{name}.webp", quality=92, method=6, alpha_quality=100)
+print(name, out.size, f"paper={P.astype(int).tolist()} layers={len(sources)} floor={FLOOR:.4f}")

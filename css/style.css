@@ -60,6 +60,7 @@ body {
 }
 img { display: block; max-width: 100%; height: auto; }
 [hidden] { display: none !important; }
+.nowrap { white-space: nowrap; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 /* JS 가 돌 때만 숨겼다가 등장 */
 html.no-js .reveal { opacity: 1; transform: none; }
@@ -126,8 +127,12 @@ small { font-weight: 300; }
   font-weight: 400;
   letter-spacing: .02em;
   line-height: 1.6;
+  text-wrap: balance;                     /* 마지막 줄에 한 단어만 남지 않게 */
 }
 .section__title small { display: block; font-size: 14px; color: var(--ink-soft); }
+p { text-wrap: pretty; }
+/* 날짜·전화처럼 숫자를 나란히 읽는 곳은 Cormorant 의 올드스타일 숫자(3·4·5·7·9 가 내려감) 대신 높이가 고른 숫자 */
+.calendar__grid, .calendar__dday b, .location__tel, .contact__num { font-variant-numeric: lining-nums tabular-nums; }
 
 /* 버튼 */
 .btn {
@@ -252,6 +257,7 @@ small { font-weight: 300; }
 /* ─────────────────────────────────────────────
    3. 달력
    ───────────────────────────────────────────── */
+.calendar .section__title { white-space: pre-line; }
 .calendar__grid {
   display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px 0;
   max-width: 330px; margin: 0 auto 26px;
@@ -265,8 +271,8 @@ small { font-weight: 300; }
   content: ""; position: absolute; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); z-index: -1;
   box-shadow: 0 4px 12px rgba(217, 56, 44, .35);
 }
-.calendar__grid .day.is-wedding::after {
-  content: ""; position: absolute; top: -15px; right: -14px; width: 30px; height: 18px;
+.calendar__grid .day.is-wedding::after {                /* 날개 하트: 동그라미 오른쪽 위에 걸치게 (옆 칸 숫자와 겹치지 않게) */
+  content: ""; position: absolute; top: -6px; right: -4px; width: 24px; height: 15px;
   background: url(../assets/illust/ico-heart.webp) center / contain no-repeat;
 }
 .calendar__dday { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
@@ -314,7 +320,7 @@ small { font-weight: 300; }
 .film__label { display: flex; justify-content: space-between; align-items: baseline; margin: 0 var(--gutter) 14px; font-size: 14px; }
 .film__label small { font-family: var(--font-en); font-style: italic; font-size: 13px; color: var(--ink-soft); letter-spacing: .04em; }
 .film__strip {
-  display: flex; gap: 14px; padding: 12px var(--gutter) 20px;
+  display: flex; gap: 14px; padding: 16px var(--gutter) 40px; margin-bottom: -20px;   /* 그림자(아래 34px)가 스크롤 영역에서 잘리지 않게 */
   overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -359,7 +365,9 @@ small { font-weight: 300; }
 .map__placeholder img { opacity: .6; margin-bottom: 6px; }
 .map__placeholder span { font-size: 15px; }
 .map__placeholder small { font-size: 11px; opacity: .7; }
-.location__apps { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 36px; }
+.location__apps { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 360px; margin: 0 auto 36px; }   /* 4개를 2×2 로 (3+1 로 나뉘지 않게) */
+.location__apps .btn { padding: 0 10px; }
+@media (min-width: 521px) { .location__apps { grid-template-columns: repeat(4, 1fr); max-width: none; } }
 .location__guide { margin: 0; text-align: left; display: grid; gap: 16px; }
 .location__guide dt { font-size: 12.5px; letter-spacing: .12em; color: var(--accent); margin-bottom: 2px; }
 .location__guide dd { margin: 0; font-size: 14.5px; white-space: pre-line; word-break: keep-all; }
@@ -428,7 +436,7 @@ small { font-weight: 300; }
 .footer__bow { display: block; width: 180px; margin: 0 auto 6px; }
 .footer__ribbon { position: relative; width: 260px; margin: 0 auto 18px; }
 .footer__ribbon-text { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.footer__ribbon-text text { font-family: var(--font-hand); font-weight: 600; font-size: 24px; fill: #3c3530; letter-spacing: .04em; }
+.footer__ribbon-text text { font-family: var(--font-hand); font-weight: 600; fill: #3c3530; letter-spacing: .04em; }
 .footer__names { margin: 0; font-size: 16px; letter-spacing: .1em; font-weight: 400; }
 .footer__thanks { margin: 6px 0 32px; font-size: 13.5px; color: var(--ink-soft); }
 .footer__share { display: flex; justify-content: center; gap: 8px; }

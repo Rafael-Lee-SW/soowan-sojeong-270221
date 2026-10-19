@@ -202,6 +202,10 @@
       filmBox.hidden = false;
       strip.innerHTML = film.map((p, i) =>
         `<button type="button" class="polaroid" data-i="${studio.length + i}" aria-label="필름 사진 ${i + 1} 크게 보기"><img src="${p.src}" alt="필름 사진 ${i + 1}" loading="lazy"><span class="polaroid__cap">${p.caption || `no. ${i + 1}`}</span></button>`).join("");
+      // "옆으로 넘겨보세요" 는 실제로 넘길 게 있을 때만 (데스크톱에서 다 보이면 숨김)
+      const hint = $(".film__hint", filmBox);
+      const syncHint = () => { hint.hidden = strip.scrollWidth <= strip.clientWidth + 4; };
+      syncHint(); addEventListener("resize", syncHint);
     }
     if (!photos.length) return;
 
@@ -242,7 +246,9 @@
 
   /* ── 오시는 길 ── */
   safe("location", () => {
-    $("#locationGuide").innerHTML = (W.venue.guide || []).map((g) => `<div><dt>${g.title}</dt><dd>${g.text}</dd></div>`).join("");
+    // " · " 구분점은 앞 항목에 붙여 줄 맨 앞에 오지 않게, "서초18-1" 같은 번호·짧은 괄호 "(서초구 강남대로 221)" 는 중간에서 끊기지 않게
+    const tidy = (t) => t.replace(/ · /g, "\u00a0· ").replace(/(\([^()\n]{1,16}\)|\S+-\S+)/g, '<span class="nowrap">$1</span>');
+    $("#locationGuide").innerHTML = (W.venue.guide || []).map((g) => `<div><dt>${g.title}</dt><dd>${tidy(g.text)}</dd></div>`).join("");
     const el = $("#map"), v = W.venue;
     // 직접 그린 약도가 있으면 그것을 최우선으로
     if (v.mapImage) {
