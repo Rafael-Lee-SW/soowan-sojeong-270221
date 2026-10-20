@@ -230,11 +230,10 @@ p { text-wrap: pretty; }
 /* ─────────────────────────────────────────────
    2. 초대 글
    ───────────────────────────────────────────── */
-/* 실물 뒷면처럼 오른쪽에 세로 꽃 덩굴 — 본문은 덩굴을 피해 조금 좁게 */
-.greeting { position: relative; padding-left: calc(var(--gutter) + 20px); padding-right: calc(var(--gutter) + 20px); }
-.greeting__vine { position: absolute; top: 64px; right: 10px; width: 40px; pointer-events: none; }
-.greeting__vine img { width: 100%; height: auto; }
-.greeting__body { margin: 0 auto 44px; font-size: 15.5px; line-height: 2.05; white-space: pre-line; word-break: keep-all; }
+.greeting__body { margin: 0 auto 30px; font-size: 15.5px; line-height: 2.05; white-space: pre-line; word-break: keep-all; }
+/* 실물 뒷면의 꽃 덩굴(vine-h = 세로 덩굴을 가로로 돌린 것)을 본문과 양가 소개 사이 구분선으로 */
+.greeting__vine { display: block; width: min(280px, 100%); margin: 0 auto 34px; }
+.greeting__vine img { display: block; width: 100%; height: auto; }
 .families { display: grid; gap: 10px; margin-bottom: 36px; }
 .families__row { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 14px; font-size: 15px; }
 .families__parents { color: var(--ink-soft); font-size: 14px; }
@@ -434,9 +433,8 @@ p { text-wrap: pretty; }
    ───────────────────────────────────────────── */
 .footer { padding: 72px var(--gutter) 48px; text-align: center; background: var(--bg-soft); }
 .footer__bow { display: block; width: 180px; margin: 0 auto 6px; }
-.footer__ribbon { position: relative; width: 260px; margin: 0 auto 18px; }
-.footer__ribbon-text { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.footer__ribbon-text text { font-family: var(--font-hand); font-weight: 600; fill: #3c3530; letter-spacing: .04em; }
+.footer__ribbon { width: 260px; margin: 0 auto 18px; }
+.footer__ribbon img { display: block; width: 100%; height: auto; }
 .footer__names { margin: 0; font-size: 16px; letter-spacing: .1em; font-weight: 400; }
 .footer__thanks { margin: 6px 0 32px; font-size: 13.5px; color: var(--ink-soft); }
 .footer__share { display: flex; justify-content: center; gap: 8px; }
@@ -463,8 +461,7 @@ p { text-wrap: pretty; }
   /* 본문 가독폭 ~560px 로 가운데 정렬 */
   .section, .footer { padding-left: max(var(--gutter), calc((100% - 560px) / 2)); padding-right: max(var(--gutter), calc((100% - 560px) / 2)); }
   .section { padding-top: 104px; padding-bottom: 104px; }
-  .greeting { padding-left: max(var(--gutter), calc((100% - 480px) / 2)); padding-right: max(var(--gutter), calc((100% - 480px) / 2)); }
-  .greeting__vine { right: 36px; top: 96px; width: 48px; }
+  .greeting__vine { width: 320px; }
   .film { margin-left: 0; margin-right: 0; }
   .film__label { margin-left: 0; margin-right: 0; }
   .film__strip { padding-left: 8px; padding-right: 8px; }   /* 폴라로이드 기울기·그림자 잘림 방지 */

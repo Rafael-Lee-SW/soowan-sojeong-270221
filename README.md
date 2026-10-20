@@ -16,7 +16,7 @@ originals/          DSLR 원본 넣는 곳 (git 제외)
 apps-script/Code.gs 사진 편지함 서버 (Google Apps Script 에 붙여넣기)
 tools/resize-photos.py  originals → assets/photos + photos.js
 tools/serve.py      로컬 미리보기 (자동 새로고침)
-tools/ribbon-path.py  푸터 리본 글씨 곡선을 리본 그림에서 측정해 index.html 에 써 넣음
+tools/ribbon-path.py  (예전) 글씨 없는 리본에 코드 글씨를 얹을 때 곡선 측정 — 지금 리본은 글씨가 그림에 포함되어 안 씀
 ```
 
 ## 로컬에서 보기
@@ -48,12 +48,13 @@ python tools/serve.py
 |---|---|---|
 | 달리는 신랑신부 (컬러, 반짝이·봉투) | `assets/illust/running.{png,webp}`, `running@800.*` | 히어로 (`.hero__art`) |
 | 수레 신랑신부 (컬러) | `assets/illust/wheelbarrow.*`, `wheelbarrow@800.*` | 사진 편지함 (`.letterbox__art`) |
-| 꽃 덩굴 (실물 뒷면 세로 장식) | `assets/illust/vine.*` | 초대글 오른쪽 (`.greeting__vine`) |
+| 꽃 덩굴 (실물 뒷면 세로 장식) | `assets/illust/vine.*` → 90° 돌린 `vine-h.*` | 초대글 본문과 양가 소개 사이 가로 구분선 (`.greeting__vine`, 2026-10-20) |
 | 손글씨 "Soowan & Sojeong" | `assets/illust/names.*` | OG 이미지 재료 (페이지에는 아직 안 씀) |
 | 손글씨 + 컬러 그림 (흰 바탕) | `assets/illust/og.jpg` (`tools/make-og.py`) | 카카오톡 미리보기 |
 
 인사하는 신랑신부(`bow.*`, 푸터)는 2026-10-19 새 화풍으로 교체 (`assets/source/수줍게 함께 인사하는 신랑신부.png` → `cut-paper.py`).
-아직 예전 GPT 그림인 것(화풍이 다름): 봉투(`envelope.*`, 인트로), 우편가방(`mailbag@300.*`), 리본(`ribbon.*`), 섹션 아이콘(`ico-*`).
+리본(`ribbon.*`)은 2026-10-20 "Thank you" 글씨가 포함된 새 그림으로 교체 (`assets/source/Thank you 리본 배너.png` → `cut-paper.py ... ribbon 900`), 코드 글씨(SVG textPath)는 제거.
+아직 예전 GPT 그림인 것(화풍이 다름): 봉투(`envelope.*`, 인트로), 우편가방(`mailbag@300.*`), 섹션 아이콘(`ico-*`).
 → **`docs/그림-생성-프롬프트.md`** 에 ChatGPT 로 다시 만들 프롬프트가 그림별로 정리되어 있다.
 
 다시 만들기 (원본은 크림색 종이 질감이라 `cut-paper.py` 사용):
@@ -63,6 +64,7 @@ python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부(�
 python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow 1400 --box 700,800,2600,2150
 python tools/cut-paper.py "assets/source/수레 신랑신부(컬러).jpg"             wheelbarrow@800 800 --box 700,800,2600,2150
 python tools/cut-paper.py "assets/source/실물 뒷면_꽃덩굴.jpg"                vine        1200 --box 1560,0,1980,2480 --pad 12
+python -c "from PIL import Image; im=Image.open('assets/illust/vine.png').rotate(90, expand=True); im.save('assets/illust/vine-h.png', optimize=True); im.save('assets/illust/vine-h.webp', quality=88, method=6)"   # 세로 덩굴 → 가로 구분선
 python tools/cut-paper.py "assets/source/실물 앞면_달리는 신랑신부.jpg"       names       2000 --box 900,200,2800,1030 --drop-below 840
 python tools/make-og.py
 ```

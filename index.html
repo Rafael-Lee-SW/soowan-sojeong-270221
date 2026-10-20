@@ -69,14 +69,14 @@
   <div class="content">
   <!-- ───────── 2. 초대 글 ───────── -->
   <section class="section greeting" id="greeting">
-    <!-- 실물 청첩장 뒷면의 세로 꽃 덩굴 -->
-    <picture class="greeting__vine reveal" aria-hidden="true">
-      <source type="image/webp" srcset="assets/illust/vine.webp?v=20261019a">
-      <img src="assets/illust/vine.png?v=20261019a" alt="">
-    </picture>
     <p class="section__label reveal">Invitation</p>
     <h2 class="section__title reveal" data-bind="greeting.title">소중한 분들을 초대합니다</h2>
     <p class="greeting__body reveal" data-bind="greeting.body"></p>
+    <!-- 실물 뒷면의 꽃 덩굴을 가로로 눕혀 본문과 양가 소개 사이 구분선으로 -->
+    <picture class="greeting__vine reveal" aria-hidden="true">
+      <source type="image/webp" srcset="assets/illust/vine-h.webp?v=20261020a">
+      <img src="assets/illust/vine-h.png?v=20261020a" alt="">
+    </picture>
 
     <div class="families reveal">
       <p class="families__row">
@@ -203,13 +203,9 @@
       <source type="image/webp" srcset="assets/illust/bow@600.webp?v=20261019b">
       <img src="assets/illust/bow@600.png?v=20261019b" alt="인사하는 신랑 신부 그림" loading="lazy">
     </picture>
+    <!-- "Thank you" 글씨까지 그림에 들어 있음 (2026-10-20, assets/source/Thank you 리본 배너.png) -->
     <div class="footer__ribbon reveal">
-      <img src="assets/illust/ribbon.webp" alt="" loading="lazy">
-      <!-- 글씨가 리본 띠의 출렁임을 따라가도록 곡선 위에 — 곡선·글자 크기는 tools/ribbon-path.py 가 리본 그림에서 측정해 써 넣음 -->
-      <svg class="footer__ribbon-text" viewBox="0 0 435 124" aria-hidden="true">
-        <path id="ribbonPath" d="M118.0,50.6 C122.1,50.4 134.4,48.9 142.6,49.3 C150.8,49.7 159.0,51.4 167.2,53.0 C175.5,54.7 183.7,57.1 191.9,59.1 C200.1,61.1 208.3,63.5 216.5,65.2 C224.7,67.0 232.9,68.7 241.1,69.7 C249.3,70.8 257.5,71.5 265.8,71.4 C274.0,71.4 282.2,70.8 290.4,69.6 C298.6,68.4 310.9,65.0 315.0,64.0" fill="none"/>
-        <text class="footer__ribbon-word" font-size="31"><textPath href="#ribbonPath" startOffset="50%" text-anchor="middle">Thank you</textPath></text>
-      </svg>
+      <img src="assets/illust/ribbon.webp?v=20261020a" alt="Thank you" loading="lazy">
     </div>
     <p class="footer__names reveal"><span data-bind="groom.name"></span> ♥ <span data-bind="bride.name"></span></p>
     <p class="footer__thanks reveal">저희의 이야기에 함께해 주셔서 고맙습니다</p>
