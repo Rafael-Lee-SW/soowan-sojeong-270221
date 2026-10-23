@@ -74,7 +74,7 @@ python tools/make-og.py
 **흰 바탕 전용** — 크림 테마나 어두운 바탕에 올리면 옅은 면이 비친다. 새 실물 원본을 넣을 때는 같은 크기(3508×2480)의 jpg 를 `assets/source/` 에 두면 종이 지도에 자동으로 합쳐진다.
 `--drop-above / --drop-below` 는 손글씨와 그림을 분리하는 옵션.
 그림 파일 주소에는 `?v=` 가 붙어 있다 — 그림을 바꾸면 `index.html` 에서 이 값도 올려야 배포 후 브라우저 캐시가 갱신된다 (`tools/serve.py` 미리보기는 캐시를 끄므로 상관없음).
-OG 를 바꾸면 developers.kakao.com/tool/clear/og 에서 캐시 삭제.
+OG 를 바꾸면 `index.html` 의 og:image 와 `js/main.js` 의 카카오 공유 imageUrl 에 붙은 `?v=` 도 올리고, developers.kakao.com/tool/clear/og 에 페이지 주소를 넣어 미리보기 캐시를 지운다 (카카오는 페이지 단위로 미리보기를 오래 캐시해서, 파일만 바꾸면 옛 그림이 계속 보인다).
 
 ### 3) 실물에서 가져온 문구·폰트 (이미 반영됨)
 - 인사말: 실물 뒷면 문구 그대로 (`config.js` `greeting.body`)

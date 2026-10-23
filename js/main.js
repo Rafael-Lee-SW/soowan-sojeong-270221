@@ -475,7 +475,7 @@
         objectType: "feed",
         content: {
           title: W.shareTitle, description: W.shareDesc,
-          imageUrl: new URL("assets/illust/og.jpg", location.href).href,
+          imageUrl: new URL("assets/illust/og.jpg?v=20261023a", location.href).href,
           link: { mobileWebUrl: location.href, webUrl: location.href },
         },
         buttons: [{ title: "청첩장 보기", link: { mobileWebUrl: location.href, webUrl: location.href } }],
