@@ -39,7 +39,10 @@ python tools/serve.py
 실물 청첩장 그림(`assets/source/실물 앞면_달리는 신랑신부.jpg`, `실물 뒷면_꽃덩굴.jpg`)과 예식장 약도까지 모두 반영 완료.
 
 ### 1) 약도 (반영 완료)
-예식장 제공 약도(`assets/source/엘블레스 약도(예식장 제공).jpg`)에서 아래 회색 안내 블록을 잘라 `assets/illust/map.webp` 로 저장, `config.js` `venue.mapImage` 에 연결.
+예식장 제공 약도(`assets/source/엘블레스 약도(예식장 제공, 2026-10).jpg`, 2026-10-24 갱신본)에서 위쪽 약도 부분만 잘라(`y 0~478`, 아래 교통 안내 글은 제외) `assets/illust/map.webp` 로 저장, `config.js` `venue.mapImage` 에 연결.
+```
+python -c "from PIL import Image; im=Image.open('assets/source/엘블레스 약도(예식장 제공, 2026-10).jpg').convert('RGB'); im.crop((0,0,im.width,478)).save('assets/illust/map.webp', quality=90, method=6)"
+```
 다른 약도로 바꾸려면 파일만 교체하면 된다(세로/가로 비율 무관 — 그림 비율대로 표시됨).
 
 ### 2) 실물 그림 (반영 완료, 2026-10-18 컬러판으로 교체)

@@ -14,7 +14,7 @@ window.WEDDING = {
     address: "서울 서초구 강남대로 213, 스포타임 지하 1층",
     addressShort: "서울 서초구 강남대로 213",
     tel: "02-526-0300",
-    mapImage: "assets/illust/map.webp",   // 예식장 제공 약도 (원본: assets/source/엘블레스 약도(예식장 제공).jpg, 아래 안내 블록은 잘라냄)
+    mapImage: "assets/illust/map.webp?v=20261024a",   // 예식장 제공 약도 (원본: assets/source/엘블레스 약도(예식장 제공, 2026-10).jpg 의 위쪽 약도 부분만 잘라냄). 그림을 바꾸면 ?v= 도 올린다
     lat: 37.4855, lng: 127.0335,   // 대략값 — 지도 키가 있으면 주소로 다시 좌표를 찾습니다
     naverMapUrl: "https://map.naver.com/p/search/엘블레스%20강남대로%20213",
     kakaoMapUrl: "https://map.kakao.com/?q=엘블레스%20강남대로%20213",
