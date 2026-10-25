@@ -1,0 +1,11 @@
+/* ─────────────────────────────────────────────
+   자체 호스팅 글꼴. 원본 TTF 는 font/ (git 제외) → tools/subset-fonts.py → assets/fonts/*.woff2
+   (영문 글꼴 Cormorant Garamond · Caveat · WindSong · Nanum Pen Script 는 index.html 의 Google Fonts 링크)
+   ───────────────────────────────────────────── */
+
+/* 한글 본문: KoPub 돋움 (300 본문, 500 강조) — 2026-10-25 확정 */
+@font-face { font-family: "KoPubWorld Dotum";  font-weight: 300; font-display: swap; src: url("../assets/fonts/KoPubWorldDotum-300.woff2") format("woff2"); }
+@font-face { font-family: "KoPubWorld Dotum";  font-weight: 500; font-display: swap; src: url("../assets/fonts/KoPubWorldDotum-500.woff2") format("woff2"); }
+/* 한글 제목(섹션 h2 · 봉투 To.): KoPub 바탕 (500 제목, 700 강조) — 2026-10-25 확정 */
+@font-face { font-family: "KoPubWorld Batang"; font-weight: 500; font-display: swap; src: url("../assets/fonts/KoPubWorldBatang-500.woff2") format("woff2"); }
+@font-face { font-family: "KoPubWorld Batang"; font-weight: 700; font-display: swap; src: url("../assets/fonts/KoPubWorldBatang-700.woff2") format("woff2"); }

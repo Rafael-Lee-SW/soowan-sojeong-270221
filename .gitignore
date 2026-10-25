@@ -2,6 +2,9 @@
 originals/*
 !originals/.gitkeep
 
+# 받아둔 글꼴 원본(TTF, 수십 MB)은 올리지 않는다 — tools/subset-fonts.py 로 줄인 assets/fonts/*.woff2 만 올림
+font/
+
 .DS_Store
 Thumbs.db
 desktop.ini
@@ -9,3 +12,6 @@ reference/
 청첩장_실물*
 스크린샷*
 qrcode_*
+
+# 작업 메모(상세 노트)는 올리지 않는다
+.claude/notes/

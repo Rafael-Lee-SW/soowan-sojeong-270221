@@ -3,9 +3,12 @@
    ───────────────────────────────────────────── */
 :root {
   --font-en: "Cormorant Garamond", "Times New Roman", serif;
-  --font-ko: "Noto Serif KR", "Apple SD Gothic Neo", serif;
-  --font-hand: "Caveat", "Segoe Script", cursive;          /* 실물 청첩장의 영문 손글씨 */
-  --font-hand-ko: "Nanum Pen Script", "Noto Serif KR", cursive;  /* 실물 청첩장의 한글 손글씨 */
+  --font-ko: "KoPubWorld Dotum", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;   /* 한글 본문 — 2026-10-25 확정 (css/fonts.css) */
+  --font-hand: "Caveat", "Segoe Script", cursive;            /* 영문 손글씨: 섹션 라벨(Invitation, Gallery …) — 2026-10-25 확정 */
+  --font-names: "WindSong", "Caveat", cursive;               /* 이름 "Soowan & Sojeong" 필기체 (Google Fonts, 무료) — 2026-10-25 확정 */
+  --font-hand-ko: "Nanum Pen Script", "KoPubWorld Batang", cursive;  /* 실물 청첩장의 한글 손글씨 */
+  --font-title: "KoPubWorld Batang", "Apple SD Gothic Neo", serif;   /* 섹션 제목·봉투 To. — 2026-10-25 확정 */
+  --weight-title: 500;
 
   --page-w: 480px;
   --gutter: 28px;
@@ -116,15 +119,16 @@ small { font-weight: 300; }
 .section__label {
   margin: 0 0 10px;
   font-family: var(--font-hand);
-  font-weight: 500;
+  font-weight: 500;                   /* 굵기 하나짜리 손글씨를 가짜 굵게로 뭉개지 않게 */
   font-size: 24px;
   letter-spacing: .02em;
   color: var(--accent);
 }
 .section__title {
   margin: 0 0 28px;
+  font-family: var(--font-title);
   font-size: 20px;
-  font-weight: 400;
+  font-weight: var(--weight-title);
   letter-spacing: .02em;
   line-height: 1.6;
   text-wrap: balance;                     /* 마지막 줄에 한 단어만 남지 않게 */
@@ -132,7 +136,7 @@ small { font-weight: 300; }
 .section__title small { display: block; font-size: 14px; color: var(--ink-soft); }
 p { text-wrap: pretty; }
 /* 날짜·전화처럼 숫자를 나란히 읽는 곳은 Cormorant 의 올드스타일 숫자(3·4·5·7·9 가 내려감) 대신 높이가 고른 숫자 */
-.calendar__grid, .calendar__dday b, .location__tel, .contact__num { font-variant-numeric: lining-nums tabular-nums; }
+.calendar__grid, .calendar__dday b, .location__tel, .contact__num, .acc__row .num { font-variant-numeric: lining-nums tabular-nums; }
 
 /* 버튼 */
 .btn {
@@ -174,7 +178,8 @@ p { text-wrap: pretty; }
   transition: transform .9s var(--ease), opacity .6s;
 }
 @keyframes hover { 50% { translate: 0 -8px; } }
-.envelope__to { margin: -6px 0 0; font-family: var(--font-en); font-style: italic; font-size: 18px; color: var(--ink-soft); letter-spacing: .04em; }
+.envelope__to { margin: -6px 0 0; font-family: var(--font-title); font-weight: var(--weight-title); font-size: 18px; color: var(--ink-soft); letter-spacing: .04em; }
+.envelope__to i { font-family: var(--font-en); font-style: italic; }   /* "To." 만 영문 이탤릭 — 한글은 기울이지 않는다 */
 .envelope__hint { margin: 0; font-size: 12.5px; letter-spacing: .18em; color: var(--ink-soft); animation: pulse 2.2s ease-in-out infinite; }
 @keyframes pulse { 50% { opacity: .35; } }
 
@@ -201,10 +206,10 @@ p { text-wrap: pretty; }
 .hero__art img { margin: 0 auto; }
 .hero__names {
   margin: 8px 0 6px;
-  font-family: var(--font-hand); font-weight: 600; font-size: clamp(40px, 12vw, 54px); letter-spacing: .01em; line-height: 1;
+  font-family: var(--font-names); font-weight: 500; font-size: clamp(34px, 10vw, 46px); letter-spacing: 0; line-height: 1.1;   /* WindSong is wide: keep side margins at 360-430px */
   white-space: nowrap;
 }
-.hero__amp { color: var(--accent); margin: 0 4px; font-size: .85em; font-weight: 500; }
+.hero__amp { margin: 0 4px; font-size: .85em; font-weight: 500; }   /* & 는 이름과 같은 검정 */
 .hero__date { margin: 0; font-family: var(--font-en); font-size: 17px; letter-spacing: .06em; }
 .hero__venue { margin: 2px 0 0; font-size: 14px; color: var(--ink-soft); letter-spacing: .1em; }
 
@@ -336,7 +341,7 @@ p { text-wrap: pretty; }
 .polaroid:nth-child(even) { --tilt: 1.4deg; }
 .polaroid img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--bg-soft);
   filter: saturate(.92) contrast(.97); }
-.polaroid__cap { display: block; margin-top: 10px; font-family: var(--font-en); font-style: italic; font-size: 13px; color: var(--ink-soft); text-align: center; letter-spacing: .04em; }
+.polaroid__cap { display: block; margin-top: 10px; font-family: "Cormorant Garamond", var(--font-ko); font-style: italic; font-size: 13px; color: var(--ink-soft); text-align: center; letter-spacing: .04em; }
 .film__hint { margin: 0 var(--gutter); font-size: 11.5px; color: var(--ink-soft); text-align: right; letter-spacing: .06em; }
 
 /* 라이트박스 */
@@ -385,7 +390,8 @@ p { text-wrap: pretty; }
 .acc.is-open .acc__body { display: block; }
 .acc__row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 18px; font-size: 14px; }
 .acc__row + .acc__row { border-top: 1px dashed var(--line); }
-.acc__row .num { font-family: var(--font-en); font-size: 16px; letter-spacing: .02em; }
+.acc__row .num { font-family: "Cormorant Garamond", var(--font-ko); font-size: 16px; letter-spacing: .02em; }   /* digits: Cormorant, Hangul falls to --font-ko */
+.acc__row .bank { font-family: var(--font-ko); font-size: 14px; margin-right: 2px; }
 .acc__row .who { color: var(--ink-soft); font-size: 13px; }
 .acc__copy { flex: none; font-size: 12.5px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
 .acc__empty { padding: 14px 18px; font-size: 13.5px; color: var(--ink-soft); }

@@ -301,7 +301,7 @@
         <button class="acc__head" type="button" aria-expanded="false" aria-controls="${id}">${label}</button>
         <div class="acc__body" id="${id}">${list.length ? list.map((a) => `
           <div class="acc__row">
-            <div><div class="num">${esc(a.bank)} ${esc(a.number)}</div><div class="who">${esc(a.holder)}</div></div>
+            <div><div class="num"><span class="bank">${esc(a.bank)}</span> ${esc(a.number)}</div><div class="who">${esc(a.holder)}</div></div>
             <button class="acc__copy" type="button" data-num="${esc(a.number)}" aria-label="${esc(a.holder)} 계좌번호 복사">복사</button>
           </div>`).join("") : `<p class="acc__empty">계좌 정보를 준비 중입니다</p>`}
         </div>
