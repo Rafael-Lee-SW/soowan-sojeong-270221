@@ -195,13 +195,13 @@
       // 첫 장 전폭, 이후 2열, 5장마다 전폭 (가로가 긴 사진은 자리에 맞게 전폭)
       grid.innerHTML = studio.map((p, i) => {
         const full = i === 0 || i % 5 === 0 || (p.w && p.h && p.w / p.h > 1.4);
-        return `<button type="button" class="studio__item${full ? " is-full" : ""}" data-i="${i}" aria-label="사진 ${i + 1} 크게 보기"><img src="${p.thumb || p.src}" alt="웨딩 사진 ${i + 1}" loading="lazy"></button>`;
+        return `<button type="button" class="studio__item${full ? " is-full" : ""}" data-i="${i}" aria-label="사진 ${i + 1} 크게 보기"><img src="${p.thumb || p.src}" alt="웨딩 사진 ${i + 1}" loading="lazy" draggable="false"></button>`;
       }).join("");
     }
     if (film.length) {
       filmBox.hidden = false;
       strip.innerHTML = film.map((p, i) =>
-        `<button type="button" class="polaroid" data-i="${studio.length + i}" aria-label="필름 사진 ${i + 1} 크게 보기"><img src="${p.src}" alt="필름 사진 ${i + 1}" loading="lazy"><span class="polaroid__cap">${p.caption || `no. ${i + 1}`}</span></button>`).join("");
+        `<button type="button" class="polaroid" data-i="${studio.length + i}" aria-label="필름 사진 ${i + 1} 크게 보기"><img src="${p.src}" alt="필름 사진 ${i + 1}" loading="lazy" draggable="false"><span class="polaroid__cap">${p.caption || `no. ${i + 1}`}</span></button>`).join("");
       // "옆으로 넘겨보세요" 는 실제로 넘길 게 있을 때만 (데스크톱에서 다 보이면 숨김)
       const hint = $(".film__hint", filmBox);
       const syncHint = () => { hint.hidden = strip.scrollWidth <= strip.clientWidth + 4; };
@@ -220,6 +220,8 @@
     };
     const open = (i) => { lastFocus = document.activeElement; show(i); lb.hidden = false; lockScroll(); $("main").inert = true; closeBtn.focus(); };
     const close = () => { lb.hidden = true; unlockScroll(); $("main").inert = false; lastFocus && lastFocus.focus(); };
+    // 사진 저장 방지: 갤러리·라이트박스 안에서 우클릭 메뉴와 드래그 저장 차단
+    ["contextmenu", "dragstart"].forEach((t) => document.addEventListener(t, (e) => { if (e.target.closest("#gallery, #lightbox")) e.preventDefault(); }));
     $("#gallery").addEventListener("click", (e) => { const f = e.target.closest("[data-i]"); if (f) open(+f.dataset.i); });
     closeBtn.addEventListener("click", close);
     $(".lightbox__nav--prev", lb).addEventListener("click", () => show(cur - 1));
