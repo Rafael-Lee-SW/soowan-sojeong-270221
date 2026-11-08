@@ -149,51 +149,26 @@ window.PHOTOS = {
   "film": [
     {
       "src": "assets/photos/film/01.jpg",
-      "w": 675,
+      "w": 900,
       "h": 900
     },
     {
       "src": "assets/photos/film/02.jpg",
-      "w": 900,
+      "w": 675,
       "h": 900
     },
     {
       "src": "assets/photos/film/03.jpg",
-      "w": 675,
+      "w": 900,
       "h": 900
     },
     {
       "src": "assets/photos/film/04.jpg",
-      "w": 675,
+      "w": 900,
       "h": 900
     },
     {
       "src": "assets/photos/film/05.jpg",
-      "w": 900,
-      "h": 900
-    },
-    {
-      "src": "assets/photos/film/06.jpg",
-      "w": 900,
-      "h": 900
-    },
-    {
-      "src": "assets/photos/film/07.jpg",
-      "w": 900,
-      "h": 900
-    },
-    {
-      "src": "assets/photos/film/08.jpg",
-      "w": 675,
-      "h": 900
-    },
-    {
-      "src": "assets/photos/film/09.jpg",
-      "w": 675,
-      "h": 900
-    },
-    {
-      "src": "assets/photos/film/10.jpg",
       "w": 675,
       "h": 900
     }

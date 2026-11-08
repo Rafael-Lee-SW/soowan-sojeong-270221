@@ -16,6 +16,20 @@
   --ease: cubic-bezier(.22, .61, .36, 1);
 }
 
+/* 화이트(확정 테마) — 기본값. data-theme 속성이 없어도 이 색이 쓰인다 */
+:root, :root[data-theme="white"] {
+  --bg-outer: #efefef;
+  --bg: #ffffff;
+  --bg-soft: #f6f5f3;
+  --ink: #262626;
+  --ink-soft: #666666;
+  --line: #e3e3e3;
+  --accent: #d9382c;
+  --accent-soft: #f3cfca;
+  --paper-noise: 0;
+  --illust-blend: normal;
+}
+
 /* 크림 — 그림 1의 종이색 */
 :root[data-theme="cream"] {
   --bg-outer: #e9e1d2;
@@ -30,25 +44,12 @@
   --illust-blend: multiply;
 }
 
-/* 화이트 — 그림 2의 순백 + 레드 */
-:root[data-theme="white"] {
-  --bg-outer: #efefef;
-  --bg: #ffffff;
-  --bg-soft: #f6f5f3;
-  --ink: #262626;
-  --ink-soft: #666666;
-  --line: #e3e3e3;
-  --accent: #d9382c;
-  --accent-soft: #f3cfca;
-  --paper-noise: 0;
-  --illust-blend: normal;
-}
-
 /* ─────────────────────────────────────────────
    베이스
    ───────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+/* 항상 밝은 테마: 브라우저의 강제 다크(크롬 자동 다크 모드, 안드로이드 웹뷰 알고리즘 다크닝)에 바탕이 검게 바뀌지 않도록 */
+html { color-scheme: only light; background: #efefef; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 body {
   margin: 0;
   background: var(--bg-outer);
@@ -59,7 +60,6 @@ body {
   letter-spacing: -0.005em;
   word-break: keep-all;
   -webkit-font-smoothing: antialiased;
-  transition: background .4s;
 }
 img { display: block; max-width: 100%; height: auto; }
 [hidden] { display: none !important; }
@@ -67,7 +67,8 @@ img { display: block; max-width: 100%; height: auto; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 /* JS 가 돌 때만 숨겼다가 등장 */
 html.no-js .reveal { opacity: 1; transform: none; }
-:root[data-theme="white"] .page::before { display: none; }
+html.no-js .envelope { display: none; }
+:root:not([data-theme="cream"]) .page::before { display: none; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
 a { color: inherit; text-decoration: none; }
 small { font-weight: 300; }
@@ -75,7 +76,7 @@ small { font-weight: 300; }
 /* 종이 질감 (SVG 노이즈) */
 .page::before {
   content: "";
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; pointer-events: none; z-index: 0;
   opacity: var(--paper-noise);
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
@@ -88,7 +89,6 @@ small { font-weight: 300; }
   min-height: 100vh;
   box-shadow: 0 0 60px rgba(0,0,0,.08);
   overflow: hidden;
-  transition: background .4s;
 }
 @media (min-width: 521px) {
   .page { margin: 32px auto; min-height: calc(100vh - 64px); }
@@ -164,13 +164,16 @@ p { text-wrap: pretty; }
    봉투 인트로
    ───────────────────────────────────────────── */
 .envelope {
-  position: fixed; inset: 0; z-index: 100;
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; z-index: 100;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px;
   background: var(--bg-outer);
   cursor: pointer; touch-action: none;
   transition: opacity .7s var(--ease), visibility .7s;
 }
 .envelope.is-gone { opacity: 0; visibility: hidden; pointer-events: none; }
+/* JS 가 죽어도 봉투가 화면을 영원히 덮지 않게: 8초 뒤 CSS 만으로 사라짐 (정상 시엔 JS 가 6초 안에 연다) */
+.envelope { animation: envelope-fallback 0s 8s forwards; }
+@keyframes envelope-fallback { to { opacity: 0; visibility: hidden; pointer-events: none; } }
 .envelope__paper {
   display: block; width: min(72vw, 300px);
   filter: drop-shadow(0 16px 26px rgba(60, 40, 20, .16));
@@ -219,7 +222,7 @@ p { text-wrap: pretty; }
 @keyframes drop { 0% { background-position: 0 -40px; } 100% { background-position: 0 80px; } }
 
 /* 떠다니는 편지봉투 */
-.hero__letters { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.hero__letters { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; pointer-events: none; overflow: hidden; }
 .letter {
   position: absolute; width: 64px; opacity: .85;
   animation: float 9s ease-in-out infinite;
@@ -348,12 +351,12 @@ p { text-wrap: pretty; }
 
 /* 라이트박스 */
 .lightbox {
-  position: fixed; inset: 0; z-index: 90; touch-action: none; background: rgba(20, 18, 16, .94);
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; z-index: 90; touch-action: none; background: rgba(20, 18, 16, .94);
   display: flex; align-items: center; justify-content: center;
 }
 .lightbox[hidden] { display: none; }
-.lightbox__img { max-width: 94vw; max-height: 86vh; object-fit: contain; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
-.lightbox__close { position: absolute; top: 12px; right: 18px; color: #fff; font-size: 34px; line-height: 1; opacity: .8; }
+.lightbox__img { max-width: 94vw; max-height: 86vh; max-height: 86svh; object-fit: contain; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+.lightbox__close { position: absolute; top: 12px; top: max(12px, env(safe-area-inset-top)); right: 18px; color: #fff; font-size: 34px; line-height: 1; opacity: .8; }
 .lightbox__nav { position: absolute; top: 50%; transform: translateY(-50%); color: #fff; font-size: 44px; padding: 20px; opacity: .7; }
 .lightbox__nav--prev { left: 0; } .lightbox__nav--next { right: 0; }
 .lightbox__count { position: absolute; bottom: 18px; left: 0; right: 0; text-align: center; color: #fff; font-family: var(--font-en); font-size: 15px; opacity: .7; margin: 0; }
@@ -428,7 +431,7 @@ p { text-wrap: pretty; }
 .upload__list li.is-video::before { content: "▶"; position: absolute; left: 6px; bottom: 4px; z-index: 1; font-size: 11px; color: #fff; text-shadow: 0 0 4px rgba(0,0,0,.6); }
 .upload__list li.is-video-ph { background: var(--ink); }
 .upload__list li::after {
-  content: attr(data-state); position: absolute; inset: 0; display: grid; place-items: center;
+  content: attr(data-state); position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; display: grid; place-items: center;
   font-size: 11px; color: #fff; background: rgba(0,0,0,.45); opacity: 0; transition: opacity .2s;
 }
 .upload__list li[data-state]:not([data-state=""])::after { opacity: 1; }
@@ -453,10 +456,11 @@ p { text-wrap: pretty; }
    ───────────────────────────────────────────── */
 @media (min-width: 960px) {
   :root { --page-w: 1200px; --gutter: 48px; }
+  @supports (overflow: clip) { .page { overflow: clip; } }
   .page {
     display: grid; grid-template-columns: minmax(440px, 46%) 1fr;
     margin: 0 auto; min-height: 100vh;
-    overflow: clip;                       /* overflow:hidden 이면 sticky 가 죽는다 */
+    overflow: visible;                    /* overflow:hidden 이면 sticky 가 죽는다 */
   }
   .hero {
     position: sticky; top: 0; align-self: start;

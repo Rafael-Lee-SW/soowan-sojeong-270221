@@ -1,5 +1,4 @@
 (() => {
-  document.documentElement.classList.replace("no-js", "js");
   const W = window.WEDDING;
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -32,7 +31,7 @@
   /* ── iOS 포함 스크롤 잠금 ── */
   let lockY = 0;
   const lockScroll = () => { lockY = window.scrollY; document.body.style.cssText = `position:fixed;top:-${lockY}px;left:0;right:0;overflow:hidden`; };
-  const unlockScroll = () => { document.body.style.cssText = ""; window.scrollTo(0, lockY); };
+  const unlockScroll = () => { document.body.style.cssText = ""; window.scrollTo({ top: lockY, behavior: "instant" }); };   // html{scroll-behavior:smooth} 때문에 닫을 때 위에서 날아오는 것 방지
 
   /* ── config → DOM 바인딩 ── */
   safe("bind", () => {
@@ -63,12 +62,14 @@
 
   /* ── 테마: 화이트 확정 (?theme=cream 으로 비교만 가능). 검토 때 기기에 저장된 선택은 지운다 ── */
   const qs = new URLSearchParams(location.search);
-  try { localStorage.removeItem("theme"); } catch {}
-  if (qs.get("theme") === "cream") document.documentElement.dataset.theme = "cream";
+  safe("theme", () => {
+    try { localStorage.removeItem("theme"); } catch {}
+    if (qs.get("theme") === "cream") document.documentElement.dataset.theme = "cream";
+  });
 
   /* ── 연락하기: 신랑·신부 + 부모님 번호 (번호 = 복사, ☎ = 전화) ── */
   safe("contacts", () => {
-    const esc = (v) => String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const esc = (v) => String(v == null ? "" : v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     $$("#contactPanel [data-side]").forEach((col) => {
       const side = col.dataset.side, p = W[side];
       const rows = [[side === "groom" ? "신랑" : "신부", p.name, p.tel], ["아버지", p.father, p.fatherTel], ["어머니", p.mother, p.motherTel]].filter((r) => r[1] && r[2]);
@@ -137,23 +138,25 @@
       env.classList.add("is-open");
       setTimeout(() => { env.classList.add("is-gone"); unlockScroll(); }, 700);
     };
-    lockScroll();
     env.addEventListener("click", openEnvelope);
     env.addEventListener("touchmove", (e) => e.preventDefault(), { passive: false });
     // 그림이 뜬 뒤 2.4초 후 자동 오픈 (느린 망에서도 봉투를 보고 넘어가도록), 최대 6초
     const arm = () => setTimeout(openEnvelope, 2400);
-    if (img.complete) arm(); else { img.addEventListener("load", arm, { once: true }); img.addEventListener("error", arm, { once: true }); }
+    if (!img || img.complete) arm(); else { img.addEventListener("load", arm, { once: true }); img.addEventListener("error", arm, { once: true }); }
     setTimeout(openEnvelope, 6000);
+    lockScroll();
   });
 
   /* ── 스크롤 등장 ── */
   safe("reveal", () => {
     const all = $$(".reveal");
     if (qs.has("reveal") || !("IntersectionObserver" in window)) { all.forEach((el) => el.classList.add("is-in")); return; }
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
-    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
-    all.forEach((el) => io.observe(el));
+    try {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
+      }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+      all.forEach((el) => io.observe(el));
+    } catch (e) { all.forEach((el) => el.classList.add("is-in")); }   // 일부 웹뷰의 불완전한 IO 구현 대비
   });
 
   /* ── 달력 (로컬 달력 날짜로 — 해외 브라우저에서도 21일) ── */
@@ -218,7 +221,7 @@
       count.textContent = `${cur + 1} / ${photos.length}`;
       preload(cur + 1); preload(cur - 1);
     };
-    const open = (i) => { lastFocus = document.activeElement; show(i); lb.hidden = false; lockScroll(); $("main").inert = true; closeBtn.focus(); };
+    const open = (i) => { lastFocus = document.activeElement; show(i); lb.hidden = false; lockScroll(); $("main").inert = true; closeBtn && closeBtn.focus(); };
     const close = () => { lb.hidden = true; unlockScroll(); $("main").inert = false; lastFocus && lastFocus.focus(); };
     // 사진 저장 방지: 갤러리·라이트박스 안에서 우클릭 메뉴와 드래그 저장 차단
     ["contextmenu", "dragstart"].forEach((t) => document.addEventListener(t, (e) => { if (e.target.closest("#gallery, #lightbox")) e.preventDefault(); }));
@@ -297,7 +300,7 @@
 
   /* ── 계좌 아코디언 ── */
   safe("accounts", () => {
-    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     const side = (label, list, id) => `
       <div class="acc">
         <button class="acc__head" type="button" aria-expanded="false" aria-controls="${id}">${label}</button>
@@ -485,4 +488,7 @@
     };
     document.head.append(s);
   });
+
+  // 여기까지 왔으면 스크립트가 정상 동작한다 — 그때만 CSS 의 no-js 폴백을 끈다
+  document.documentElement.classList.replace("no-js", "js");
 })();
