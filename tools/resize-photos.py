@@ -10,8 +10,8 @@
 HEIC 는 pillow-heif 가 필요:  pip install pillow-heif
 """
 from pathlib import Path
-from PIL import Image, ImageOps
-import json
+from PIL import Image, ImageOps, ImageCms
+import io, json
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "originals"
@@ -25,6 +25,24 @@ try:
 except ImportError:
     pass
 
+SRGB = ImageCms.createProfile("sRGB")
+
+def to_srgb(im):
+    """sRGB 가 아닌 프로필(ProPhoto, Adobe RGB 등)은 sRGB 로 변환. 프로필을 그냥 떼면 색이 바랜다."""
+    icc = im.info.get("icc_profile")
+    im = im.convert("RGB")
+    if not icc:
+        return im
+    try:
+        src = ImageCms.ImageCmsProfile(io.BytesIO(icc))
+        if "sRGB" in ImageCms.getProfileDescription(src):
+            return im
+        return ImageCms.profileToProfile(im, src, SRGB, renderingIntent=ImageCms.Intent.RELATIVE_COLORIMETRIC,
+                                         outputMode="RGB", flags=ImageCms.Flags.BLACKPOINTCOMPENSATION)
+    except Exception as e:
+        print(f"  색 프로필 변환 실패, 그대로 사용: {e}")
+        return im
+
 result = {}
 for name, (full_w, thumb_w) in SETS.items():
     src = SRC / name
@@ -36,7 +54,7 @@ for name, (full_w, thumb_w) in SETS.items():
     files = sorted(p for p in src.iterdir() if p.suffix.lower() in EXT) if src.exists() else []
     for i, p in enumerate(files, 1):
         try:
-            im = ImageOps.exif_transpose(Image.open(p)).convert("RGB")
+            im = to_srgb(ImageOps.exif_transpose(Image.open(p)))
         except Exception as e:
             print(f"skip {p.name}: {e}")
             continue

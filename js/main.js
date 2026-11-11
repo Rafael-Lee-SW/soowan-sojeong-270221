@@ -195,15 +195,19 @@
       grid.innerHTML = Array.from({ length: 5 }, (_, i) =>
         `<div class="studio__ph${i === 0 ? " is-full" : ""}">${i === 0 ? "photos coming soon" : ""}</div>`).join("");
     } else {
-      // 첫 장(메인)만 전폭, 나머지는 3열 모자이크: 12장마다 2x2 큰 칸(좌·우 번갈아), 가로 사진은 2칸 폭
+      // 첫 장(메인)만 전폭, 나머지는 3열. 3으로 안 나눠떨어지면 4열 줄을 1~2개 섞어 빈칸 없이 맞춘다
+      const rest = studio.length - 1, four = (3 - rest % 3) % 3 === 0 ? 0 : (rest % 3 === 1 ? 1 : 2);
+      const rows = Math.max(0, (rest - four * 4) / 3) + four;
+      const fourRows = Array.from({ length: four }, (_, k) => Math.round((k + 1) * rows / (four + 1)));
+      const quarter = new Set();
+      for (let r = 0, j = 1; r < rows; r++) {
+        const n = fourRows.indexOf(r) >= 0 ? 4 : 3;
+        if (n === 4) for (let k = 0; k < 4; k++) quarter.add(j + k);
+        j += n;
+      }
       grid.innerHTML = studio.map((p, i) => {
-        const j = i - 1, wide = p.w && p.h && p.w / p.h > 1.2;
-        let cls = "";
-        if (i === 0) cls = " is-full";
-        else if (wide) cls = " is-wide";
-        else if (j % 12 === 0) cls = (j / 12) % 2 ? " is-big is-big--r" : " is-big";
-        const src = cls === " is-full" || cls.indexOf("is-big") > 0 ? p.src : (p.thumb || p.src);
-        return `<button type="button" class="studio__item${cls}" data-i="${i}" aria-label="사진 ${i + 1} 크게 보기"><img src="${src}" alt="웨딩 사진 ${i + 1}" loading="lazy" draggable="false"></button>`;
+        const cls = i === 0 ? " is-full" : (quarter.has(i) ? " is-q" : "");
+        return `<button type="button" class="studio__item${cls}" data-i="${i}" aria-label="사진 ${i + 1} 크게 보기"><img src="${i === 0 ? p.src : (p.thumb || p.src)}" alt="웨딩 사진 ${i + 1}" loading="lazy" draggable="false"></button>`;
       }).join("");
     }
     if (film.length) {
