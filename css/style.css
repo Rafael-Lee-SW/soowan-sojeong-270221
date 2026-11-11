@@ -314,15 +314,20 @@ p { text-wrap: pretty; }
    ───────────────────────────────────────────── */
 /* 사진 저장 방지: 길게 눌러 저장·드래그·선택 차단 (우클릭은 main.js 에서) */
 .studio__item img, .polaroid img, .lightbox__img { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-/* Studio — 에디토리얼 그리드: 첫 장 전폭, 이후 2열, 5장마다 전폭 */
-.studio { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.studio__item { display: block; width: 100%; padding: 0; overflow: hidden; background: var(--bg-soft); border-radius: 3px; cursor: pointer; aspect-ratio: 4 / 5; }
-.studio__item.is-full { grid-column: 1 / -1; aspect-ratio: auto; }
-.studio__item img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+/* Studio — 메인 1장 전폭 + 3열 모자이크 (2x2 큰 칸, 가로 사진 2칸) */
+.studio { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-flow: dense; gap: 5px; }
+.studio__item { position: relative; display: block; width: 100%; padding: 0; overflow: hidden; background: var(--bg-soft); border-radius: 2px; cursor: pointer; aspect-ratio: 3 / 4; }
+.studio__item.is-full { grid-column: 1 / -1; aspect-ratio: 2 / 3; margin-bottom: 5px; }
+.studio__item.is-big { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+.studio__item.is-big--r { grid-column: 2 / span 2; }
+.studio__item.is-wide { grid-column: span 2; aspect-ratio: auto; }
+.studio__item img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
 .studio__item:hover img { transform: scale(1.03); }
+.studio__hint { margin: 12px 0 0; font-size: 11.5px; color: var(--ink-soft); text-align: center; letter-spacing: .06em; }
 .studio__ph { aspect-ratio: 4 / 5; background: var(--bg-soft); border-radius: 3px; display: grid; place-items: center;
   color: var(--ink-soft); font-family: var(--font-en); font-style: italic; font-size: 14px; }
 .studio__ph.is-full { grid-column: 1 / -1; aspect-ratio: 3 / 2; }
+.studio__ph:not(.is-full) { display: none; }
 
 /* Film — 폴라로이드 가로 스트립 */
 .film { margin: 44px calc(-1 * var(--gutter)) 0; }

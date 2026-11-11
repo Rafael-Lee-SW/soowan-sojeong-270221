@@ -195,10 +195,15 @@
       grid.innerHTML = Array.from({ length: 5 }, (_, i) =>
         `<div class="studio__ph${i === 0 ? " is-full" : ""}">${i === 0 ? "photos coming soon" : ""}</div>`).join("");
     } else {
-      // 첫 장 전폭, 이후 2열, 5장마다 전폭 (가로가 긴 사진은 자리에 맞게 전폭)
+      // 첫 장(메인)만 전폭, 나머지는 3열 모자이크: 12장마다 2x2 큰 칸(좌·우 번갈아), 가로 사진은 2칸 폭
       grid.innerHTML = studio.map((p, i) => {
-        const full = i === 0 || i % 5 === 0 || (p.w && p.h && p.w / p.h > 1.4);
-        return `<button type="button" class="studio__item${full ? " is-full" : ""}" data-i="${i}" aria-label="사진 ${i + 1} 크게 보기"><img src="${p.thumb || p.src}" alt="웨딩 사진 ${i + 1}" loading="lazy" draggable="false"></button>`;
+        const j = i - 1, wide = p.w && p.h && p.w / p.h > 1.2;
+        let cls = "";
+        if (i === 0) cls = " is-full";
+        else if (wide) cls = " is-wide";
+        else if (j % 12 === 0) cls = (j / 12) % 2 ? " is-big is-big--r" : " is-big";
+        const src = cls === " is-full" || cls.indexOf("is-big") > 0 ? p.src : (p.thumb || p.src);
+        return `<button type="button" class="studio__item${cls}" data-i="${i}" aria-label="사진 ${i + 1} 크게 보기"><img src="${src}" alt="웨딩 사진 ${i + 1}" loading="lazy" draggable="false"></button>`;
       }).join("");
     }
     if (film.length) {
