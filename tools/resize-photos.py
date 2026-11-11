@@ -37,11 +37,10 @@ def to_srgb(im):
         src = ImageCms.ImageCmsProfile(io.BytesIO(icc))
         if "sRGB" in ImageCms.getProfileDescription(src):
             return im
-        return ImageCms.profileToProfile(im, src, SRGB, renderingIntent=ImageCms.Intent.RELATIVE_COLORIMETRIC,
-                                         outputMode="RGB", flags=ImageCms.Flags.BLACKPOINTCOMPENSATION)
+        # 0x2000 = 블랙 포인트 보정 (Pillow 버전에 따라 ImageCms.Flags 가 없어 숫자로 지정)
+        return ImageCms.profileToProfile(im, src, SRGB, renderingIntent=1, outputMode="RGB", flags=0x2000)
     except Exception as e:
-        print(f"  색 프로필 변환 실패, 그대로 사용: {e}")
-        return im
+        raise SystemExit(f"색 프로필 변환 실패 ({e}) — 변환 없이 저장하면 색이 바래므로 중단합니다")
 
 result = {}
 for name, (full_w, thumb_w) in SETS.items():
