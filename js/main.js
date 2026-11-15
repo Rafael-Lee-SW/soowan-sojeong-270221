@@ -188,28 +188,33 @@
     const P = window.PHOTOS || {};
     const studio = Array.isArray(P) ? P : (P.studio || []);
     const film = Array.isArray(P) ? [] : (P.film || []);
-    const photos = studio.concat(film);           // 라이트박스 공통 인덱스
     const grid = $("#galleryStudio"), filmBox = $("#galleryFilm"), strip = $("#galleryFilmStrip");
 
     if (!studio.length) {
       grid.innerHTML = Array.from({ length: 5 }, (_, i) =>
         `<div class="studio__ph${i === 0 ? " is-full" : ""}">${i === 0 ? "photos coming soon" : ""}</div>`).join("");
     } else {
-      // 첫 장(메인)만 전폭, 나머지는 3열. 3으로 안 나눠떨어지면 4열 줄을 1~2개 섞어 빈칸 없이 맞춘다
-      const rest = studio.length - 1, four = (3 - rest % 3) % 3 === 0 ? 0 : (rest % 3 === 1 ? 1 : 2);
-      const rows = Math.max(0, (rest - four * 4) / 3) + four;
-      const fourRows = Array.from({ length: four }, (_, k) => Math.round((k + 1) * rows / (four + 1)));
-      const quarter = new Set();
-      for (let r = 0, j = 1; r < rows; r++) {
-        const n = fourRows.indexOf(r) >= 0 ? 4 : 3;
-        if (n === 4) for (let k = 0; k < 4; k++) quarter.add(j + k);
-        j += n;
-      }
-      grid.innerHTML = studio.map((p, i) => {
-        const cls = i === 0 ? " is-full" : (quarter.has(i) ? " is-q" : "");
-        return `<button type="button" class="studio__item${cls}" data-i="${i}" aria-label="사진 ${i + 1} 크게 보기"><img src="${i === 0 ? p.src : (p.thumb || p.src)}" alt="웨딩 사진 ${i + 1}" loading="lazy" draggable="false"></button>`;
+      // 줄 단위 배치 (config.js 의 gallery): 한 줄에 1장=전폭, 2장=반반, 3장=3열, "+" 붙은 사진=크게(옆에 2장 세로로)
+      // 목록에 없는 사진은 뒤에 3장씩 붙인다. 배열 순서를 줄 순서로 바꿔 두므로 라이트박스도 같은 순서로 넘어간다
+      const num = (p) => (/(\d+)\.\w+$/.exec(p.src) || [])[1];
+      const byNum = new Map(studio.map((p) => [num(p), p]));
+      const rows = (W.gallery || []).map((line) => line.trim().split(/\s+/)
+        .map((t) => ({ p: byNum.get(t.replace("+", "")), big: t.endsWith("+") }))
+        .filter((c) => c.p && byNum.delete(num(c.p)))).filter((r) => r.length);
+      const left = Array.from(byNum.values());
+      while (left.length) rows.push(left.splice(0, 3).map((p) => ({ p, big: false })));
+      studio.length = 0;
+      grid.innerHTML = rows.map((row, r) => {
+        const mosaic = row.length === 3 && row.some((c) => c.big);
+        return row.map((c) => {
+          const cls = row.length === 1 ? (r === 0 ? " is-full" : " is-wide") : row.length === 2 ? " is-half"
+            : mosaic && c.big ? " is-big" : "";
+          const i = studio.push(c.p) - 1, large = cls === " is-full" || cls === " is-wide" || cls === " is-big";
+          return `<button type="button" class="studio__item${cls}" data-i="${i}" aria-label="사진 ${i + 1} 크게 보기"><img src="${large ? c.p.src : (c.p.thumb || c.p.src)}" alt="웨딩 사진 ${i + 1}" loading="lazy" draggable="false"></button>`;
+        }).join("");
       }).join("");
     }
+    const photos = studio.concat(film);           // 라이트박스 공통 인덱스
     if (film.length) {
       filmBox.hidden = false;
       strip.innerHTML = film.map((p, i) =>

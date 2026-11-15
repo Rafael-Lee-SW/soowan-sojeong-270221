@@ -314,12 +314,14 @@ p { text-wrap: pretty; }
    ───────────────────────────────────────────── */
 /* 사진 저장 방지: 길게 눌러 저장·드래그·선택 차단 (우클릭은 main.js 에서) */
 .studio__item img, .polaroid img, .lightbox__img { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-/* Studio — 메인 1장 전폭 + 3열 격자 (장수가 안 맞으면 4열 줄을 섞음: 12칸 기준 4칸/3칸) */
+/* Studio — 줄 단위 배치 (12칸): 전폭 1장 / 반반 2장 / 3열 3장 / 큰 1장 + 옆에 세로 2장. 대문만 원본 비율 2:3, 나머지 칸은 3:4 (길이 절약) */
 .studio { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; }
 .studio__item { position: relative; display: block; width: 100%; padding: 0; overflow: hidden; background: var(--bg-soft); border-radius: 2px; cursor: pointer; grid-column: span 4; aspect-ratio: 3 / 4; }
 .studio__item.is-full { grid-column: 1 / -1; aspect-ratio: 2 / 3; margin-bottom: 5px; }
-.studio__item.is-q { grid-column: span 3; }
-.studio__item img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+.studio__item.is-wide { grid-column: 1 / -1; aspect-ratio: 4 / 5; }
+.studio__item.is-half { grid-column: span 6; }
+.studio__item.is-big { grid-column: span 8; grid-row: span 2; aspect-ratio: auto; height: 100%; }
+.studio__item img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; transition: transform .8s var(--ease); }
 .studio__item:hover img { transform: scale(1.03); }
 .studio__hint { margin: 12px 0 0; font-size: 11.5px; color: var(--ink-soft); text-align: center; letter-spacing: .06em; }
 .studio__ph { aspect-ratio: 4 / 5; background: var(--bg-soft); border-radius: 3px; display: grid; place-items: center;
